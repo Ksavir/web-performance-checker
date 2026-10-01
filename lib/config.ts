@@ -1,13 +1,14 @@
 // Configuración compartida entre servidor y cliente (sin imports de Node).
+import type { PageType, Device, Rating, ValueFormat } from './types.ts';
 
-export const PAGE_TYPES = [
+export const PAGE_TYPES: { id: PageType; label: string }[] = [
   { id: 'homepage', label: 'Homepage' },
   { id: 'lobby', label: 'Lobby' },
   { id: 'promotions', label: 'Promotions' },
   { id: 'login', label: 'Login' },
 ];
 
-export const DEVICES = [
+export const DEVICES: { id: Device; label: string }[] = [
   { id: 'mobile', label: 'Mobile' },
   { id: 'desktop', label: 'Desktop' },
 ];
@@ -19,7 +20,7 @@ export const THRESHOLDS = {
 };
 
 // Umbrales de Google (Core Web Vitals / Lighthouse).
-export const RATINGS = {
+export const RATINGS: Record<string, { good: number; poor: number; higherIsBetter?: boolean }> = {
   score: { good: 90, poor: 50, higherIsBetter: true },
   lcp: { good: 2500, poor: 4000 },
   fcp: { good: 1800, poor: 3000 },
@@ -28,14 +29,14 @@ export const RATINGS = {
 };
 
 /** Devuelve 'good' | 'ok' | 'poor' | 'none' */
-export function rate(metric, value) {
+export function rate(metric: string, value: number | null | undefined): Rating {
   const r = RATINGS[metric];
   if (!r || value == null) return 'none';
   if (r.higherIsBetter) return value >= r.good ? 'good' : value >= r.poor ? 'ok' : 'poor';
   return value <= r.good ? 'good' : value <= r.poor ? 'ok' : 'poor';
 }
 
-export const METRICS = [
+export const METRICS: { key: 'lcp' | 'fcp' | 'tbt' | 'cls' | 'pageSize' | 'requestCount'; label: string; short: string; fmt: ValueFormat }[] = [
   { key: 'lcp', label: 'Largest Contentful Paint', short: 'LCP', fmt: 'ms' },
   { key: 'fcp', label: 'First Contentful Paint', short: 'FCP', fmt: 'ms' },
   { key: 'tbt', label: 'Total Blocking Time', short: 'TBT', fmt: 'ms' },
@@ -44,7 +45,7 @@ export const METRICS = [
   { key: 'requestCount', label: 'Requests', short: 'Req', fmt: 'int' },
 ];
 
-export function formatValue(fmt, v) {
+export function formatValue(fmt: ValueFormat, v: number | null | undefined): string {
   if (v == null) return '–';
   switch (fmt) {
     case 'ms':
@@ -58,7 +59,7 @@ export function formatValue(fmt, v) {
   }
 }
 
-export function formatBytes(b) {
+export function formatBytes(b: number | null | undefined): string {
   if (b == null) return '–';
   if (b >= 1024 * 1024) return `${(b / 1024 / 1024).toFixed(2)} MB`;
   if (b >= 1024) return `${Math.round(b / 1024)} KB`;

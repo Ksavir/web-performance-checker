@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
+import type { Device, Findings, PageType, TestResult, TestRow } from './types.ts';
 
 const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data', 'lighthouse.db');
 
@@ -29,9 +30,10 @@ function open() {
 }
 
 // Singleton que sobrevive al hot-reload de Next en desarrollo.
-export const db = (globalThis.__db ??= open());
+const g = globalThis as typeof globalThis & { __db?: Database.Database };
+export const db: Database.Database = (g.__db ??= open());
 
-const toRow = (r) => ({
+const toRow = (r: any): TestRow => ({
   id: r.id,
   batchId: r.batch_id,
   url: r.url,
@@ -50,7 +52,14 @@ const toRow = (r) => ({
   warnings: JSON.parse(r.warnings || '[]'),
 });
 
-export function saveTest({ batchId, url, pageType, device, runs, result }) {
+export function saveTest({ batchId, url, pageType, device, runs, result }: {
+  batchId: string;
+  url: string;
+  pageType: PageType;
+  device: Device;
+  runs: number;
+  result: TestResult;
+}): number {
   const info = db
     .prepare(
       `INSERT INTO tests (batch_id, url, page_type, device, created_at, runs, score, lcp, fcp, tbt, cls, page_size, request_count, findings, warnings)
@@ -65,16 +74,16 @@ export function saveTest({ batchId, url, pageType, device, runs, result }) {
   return Number(info.lastInsertRowid);
 }
 
-export const getTest = (id) => {
+export const getTest = (id: number | string): TestRow | null => {
   const r = db.prepare('SELECT * FROM tests WHERE id = ?').get(id);
   return r ? toRow(r) : null;
 };
 
-export const getBatch = (batchId) =>
+export const getBatch = (batchId: string): TestRow[] =>
   db.prepare('SELECT * FROM tests WHERE batch_id = ? ORDER BY device DESC').all(batchId).map(toRow);
 
 /** Resultado anterior de la misma URL + tipo de página + dispositivo. */
-export const getPrevious = (t) => {
+export const getPrevious = (t: Pick<TestRow, 'url' | 'pageType' | 'device' | 'id'>): TestRow | null => {
   const r = db
     .prepare('SELECT * FROM tests WHERE url = ? AND page_type = ? AND device = ? AND id < ? ORDER BY id DESC LIMIT 1')
     .get(t.url, t.pageType, t.device, t.id);
@@ -83,18 +92,19 @@ export const getPrevious = (t) => {
 
 /** Lista de lotes recientes (un lote = una ejecución con uno o dos dispositivos). */
 export function listBatches(limit = 30) {
+  type BatchRow = { batch_id: string; url: string; page_type: PageType; created_at: string; scores: string };
   const rows = db
     .prepare(
       `SELECT batch_id, url, page_type, MIN(created_at) AS created_at,
               GROUP_CONCAT(device || ':' || COALESCE(score, -1)) AS scores
        FROM tests GROUP BY batch_id ORDER BY MAX(id) DESC LIMIT ?`
     )
-    .all(limit);
+    .all(limit) as BatchRow[];
   return rows.map((r) => ({
     batchId: r.batch_id,
     url: r.url,
     pageType: r.page_type,
     createdAt: r.created_at,
-    scores: Object.fromEntries(r.scores.split(',').map((s) => { const [d, v] = s.split(':'); return [d, Number(v)]; })),
+    scores: Object.fromEntries(r.scores.split(',').map((s) => { const [d, v] = s.split(':'); return [d, Number(v)] as const; })),
   }));
 }

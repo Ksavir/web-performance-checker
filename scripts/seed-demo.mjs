@@ -1,8 +1,8 @@
 // Carga datos de ejemplo (sin Chrome) para ver la interfaz y el PDF.
 // Uso: npm run seed
 import crypto from 'node:crypto';
-import { extract } from '../lib/analyze.js';
-import { saveTest } from '../lib/db.js';
+import { extract } from '../lib/analyze.ts';
+import { saveTest } from '../lib/db.ts';
 
 const url = 'https://www.demo-casino.example/';
 

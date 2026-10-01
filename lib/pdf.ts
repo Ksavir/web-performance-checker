@@ -1,21 +1,24 @@
 import PDFDocument from 'pdfkit';
-import { METRICS, PAGE_TYPES, formatValue, formatBytes, rate } from './config.js';
-import { compare } from './compare.js';
-import { getPrevious } from './db.js';
+import { METRICS, PAGE_TYPES, formatValue, formatBytes, rate } from './config.ts';
+import { compare } from './compare.ts';
+import { getPrevious } from './db.ts';
+import type { Delta, MetricKey, TestRow } from './types.ts';
 
-const COLORS = { ink: '#12211B', green: '#0F4B39', muted: '#5B6B63', line: '#D5DDD8', good: '#1E8E5A', ok: '#B8860B', poor: '#C23B2E' };
+const COLORS: Record<string, string> = { ink: '#12211B', green: '#0F4B39', muted: '#5B6B63', line: '#D5DDD8', good: '#1E8E5A', ok: '#B8860B', poor: '#C23B2E' };
 const MARGIN = 48;
 
-const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + '...' : s);
-const shortUrl = (u, n = 70) => { try { const x = new URL(u); return trunc(x.host + x.pathname + x.search, n); } catch { return trunc(u, n); } };
+const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + '...' : s);
+const shortUrl = (u: string, n = 70) => { try { const x = new URL(u); return trunc(x.host + x.pathname + x.search, n); } catch { return trunc(u, n); } };
 
-function ensureSpace(doc, h) {
+type Doc = InstanceType<typeof PDFDocument>;
+
+function ensureSpace(doc: Doc, h: number) {
   if (doc.y + h > doc.page.height - MARGIN) doc.addPage();
 }
 
-function table(doc, headers, rows, widths) {
+function table(doc: Doc, headers: string[], rows: unknown[][], widths: number[]) {
   const startX = MARGIN;
-  const drawRow = (cells, bold, color) => {
+  const drawRow = (cells: unknown[], bold: boolean, color?: string) => {
     ensureSpace(doc, 18);
     const y = doc.y;
     let x = startX;
@@ -34,22 +37,22 @@ function table(doc, headers, rows, widths) {
   doc.moveDown(0.6);
 }
 
-function deltaText(d, key) {
+function deltaText(d: Delta | undefined, key: MetricKey): string {
   if (!d) return '';
   const m = METRICS.find((x) => x.key === key);
   const sign = d.diff > 0 ? '+' : d.diff < 0 ? '-' : '';
   const abs = Math.abs(d.diff);
-  const val = key === 'score' ? String(Math.round(abs)) : formatValue(m.fmt, abs);
+  const val = key === 'score' || !m ? String(Math.round(abs)) : formatValue(m.fmt, abs);
   const tag = d.status === 'better' ? 'better' : d.status === 'worse' ? 'worse' : 'same';
   return d.status === 'same' ? 'no change' : `${sign}${val} (${tag})`;
 }
 
 /** Genera el PDF de un lote (mobile + desktop) y devuelve un Buffer. */
-export function buildPdf(tests) {
-  return new Promise((resolve, reject) => {
+export function buildPdf(tests: TestRow[]): Promise<Buffer> {
+  return new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: MARGIN, info: { Title: 'Casino performance report' } });
-    const chunks = [];
-    doc.on('data', (c) => chunks.push(c));
+    const chunks: Buffer[] = [];
+    doc.on('data', (c: Buffer) => chunks.push(c));
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
@@ -70,14 +73,14 @@ export function buildPdf(tests) {
       doc.font('Helvetica-Bold').fontSize(15).fillColor(COLORS.green).text(t.device === 'mobile' ? 'Mobile' : 'Desktop');
       doc.moveDown(0.2).font('Helvetica-Bold').fontSize(12).fillColor(COLORS[rate('score', t.score) === 'none' ? 'ink' : rate('score', t.score)])
         .text(`Performance score: ${t.score} / 100`);
-      if (cmp) doc.font('Helvetica').fontSize(9).fillColor(COLORS.muted).text(`Compared with previous test on ${new Date(cmp.previousDate).toLocaleString('en-GB')} (score ${cmp.deltas.score.previous}): ${deltaText(cmp.deltas.score, 'score')}`);
+      if (cmp) doc.font('Helvetica').fontSize(9).fillColor(COLORS.muted).text(`Compared with previous test on ${new Date(cmp.previousDate).toLocaleString('en-GB')} (score ${cmp.deltas.score?.previous}): ${deltaText(cmp.deltas.score, 'score')}`);
       else doc.font('Helvetica').fontSize(9).fillColor(COLORS.muted).text('No previous test to compare with.');
       doc.moveDown(0.6);
 
       table(doc, ['Metric', 'Value', 'Previous', 'Change'],
         METRICS.map((m) => [
           m.label, formatValue(m.fmt, t[m.key]),
-          cmp?.deltas[m.key] ? formatValue(m.fmt, cmp.deltas[m.key].previous) : '-',
+          cmp?.deltas[m.key] ? formatValue(m.fmt, cmp.deltas[m.key]!.previous) : '-',
           cmp?.deltas[m.key] ? deltaText(cmp.deltas[m.key], m.key) : '-',
         ]),
         [190, 90, 90, 130]);
@@ -88,7 +91,7 @@ export function buildPdf(tests) {
         doc.moveDown(0.6);
       }
 
-      const section = (title) => { ensureSpace(doc, 50); doc.font('Helvetica-Bold').fontSize(11).fillColor(COLORS.green).text(title, MARGIN, doc.y); doc.moveDown(0.3); };
+      const section = (title: string) => { ensureSpace(doc, 50); doc.font('Helvetica-Bold').fontSize(11).fillColor(COLORS.green).text(title, MARGIN, doc.y); doc.moveDown(0.3); };
 
       section('Five slowest API requests');
       table(doc, ['Request', 'Duration', 'Status', 'Size'],

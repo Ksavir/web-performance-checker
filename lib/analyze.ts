@@ -1,13 +1,14 @@
-import { THRESHOLDS } from './config.js';
+import { THRESHOLDS } from './config.ts';
+import type { Lhr, Request, TestResult } from './types.ts';
 
-const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
-const isApi = (r) =>
+const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+const isApi = (r: Request) =>
   r.type === 'XHR' ||
   r.type === 'Fetch' ||
   /json/i.test(r.mime) ||
   (/\/(api|graphql|gql)(\/|\?|$)/i.test(safePath(r.url)) && !['Image', 'Script', 'Stylesheet', 'Font', 'Media'].includes(r.type));
 
-function safePath(u) {
+function safePath(u: string) {
   try { return new URL(u).pathname + new URL(u).search; } catch { return u; }
 }
 
@@ -15,7 +16,7 @@ function safePath(u) {
  * Convierte el informe (LHR) de Lighthouse en el resultado que usa la app.
  * Es una función pura: se puede probar sin Chrome.
  */
-export function extract(lhr, requestedUrl) {
+export function extract(lhr: Lhr, requestedUrl?: string): TestResult {
   if (lhr.runtimeError) {
     throw new Error(`Lighthouse error: ${lhr.runtimeError.message || lhr.runtimeError.code}`);
   }
@@ -25,10 +26,10 @@ export function extract(lhr, requestedUrl) {
     throw new Error('Lighthouse could not compute a performance score. The page may have failed to load or blocked the test (anti-bot, geo-block, age gate).');
   }
 
-  const items = a['network-requests']?.details?.items ?? [];
+  const items: any[] = a['network-requests']?.details?.items ?? [];
   const reqs = items
     .filter((i) => i.url && !i.url.startsWith('data:'))
-    .map((i) => {
+    .map((i): Request => {
       const start = num(i.networkRequestTime ?? i.startTime);
       const end = num(i.networkEndTime ?? i.endTime);
       const transfer = num(i.transferSize);
@@ -66,8 +67,8 @@ export function extract(lhr, requestedUrl) {
     .map(({ url, size }) => ({ url, size }));
 
   // Ahorros estimados (solo si Lighthouse los reporta en esta versión)
-  const savings = {};
-  const s = (id) => a[id]?.details?.overallSavingsBytes;
+  const savings: TestResult['findings']['savings'] = {};
+  const s = (id: string) => a[id]?.details?.overallSavingsBytes;
   if (s('unused-javascript') != null) savings.unusedJs = s('unused-javascript');
   if (s('unminified-javascript') != null) savings.unminifiedJs = s('unminified-javascript');
   if (s('uses-responsive-images') != null) savings.oversizedImages = s('uses-responsive-images');
@@ -75,7 +76,7 @@ export function extract(lhr, requestedUrl) {
 
   const warnings = [...(lhr.runWarnings || [])];
   const doc = reqs.find((r) => r.type === 'Document');
-  if (doc && doc.status >= 400) {
+  if (doc && doc.status != null && doc.status >= 400) {
     warnings.push(`Main document returned HTTP ${doc.status}. The site may be blocking automated tests (anti-bot, geo-block).`);
   }
   if (requestedUrl && lhr.finalDisplayedUrl) {
@@ -101,7 +102,7 @@ export function extract(lhr, requestedUrl) {
 }
 
 /** Elige la corrida con la mediana del score (evita mezclar métricas de corridas distintas). */
-export function pickMedian(results) {
+export function pickMedian<T extends { score: number }>(results: T[]): T {
   const sorted = [...results].sort((x, y) => x.score - y.score);
   return sorted[Math.floor((sorted.length - 1) / 2)];
 }

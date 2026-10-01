@@ -1,6 +1,7 @@
-import { PAGE_TYPES } from './config.js';
+import { PAGE_TYPES } from './config.ts';
+import type { Device, PageType } from './types.ts';
 
-export function normalizeUrl(input) {
+export function normalizeUrl(input: unknown): string {
   let raw = String(input || '').trim();
   if (!raw) throw new Error('Enter a URL.');
   if (!/^https?:\/\//i.test(raw)) raw = 'https://' + raw;
@@ -12,11 +13,11 @@ export function normalizeUrl(input) {
   return u.href;
 }
 
-export function validateRequest(body) {
+export function validateRequest(body: any): { url: string; pageType: PageType; devices: Device[]; runs: number } {
   const url = normalizeUrl(body?.url);
-  const pageType = PAGE_TYPES.some((p) => p.id === body?.pageType) ? body.pageType : null;
+  const pageType = PAGE_TYPES.find((p) => p.id === body?.pageType)?.id;
   if (!pageType) throw new Error('Choose a page type.');
-  const devices = ['mobile', 'desktop'].filter((d) => (body?.devices || []).includes(d));
+  const devices = (['mobile', 'desktop'] as Device[]).filter((d) => ((body?.devices as string[]) || []).includes(d));
   if (!devices.length) throw new Error('Choose at least one device.');
   const runs = [1, 3].includes(Number(body?.runs)) ? Number(body.runs) : 1;
   return { url, pageType, devices, runs };
