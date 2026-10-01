@@ -62,31 +62,27 @@ function DeviceResult({ t }) {
           score={t.score}
           caption={cmp ? <>vs previous: <Delta d={cmp.deltas.score} isScore /></> : 'First test for this page'}
         />
-        <div className="table-wrap">
-          <table className="ledger">
-            <thead>
-              <tr><th>Metric</th><th className="num">Value</th><th className="num">Previous</th><th className="num">Change</th></tr>
-            </thead>
-            <tbody>
-              {METRICS.map((m) => {
-                const d = cmp?.deltas[m.key];
-                const r = ['lcp', 'fcp', 'tbt', 'cls'].includes(m.key) ? rate(m.key, t[m.key]) : 'none';
-                return (
-                  <tr key={m.key}>
-                    <td>{m.label}</td>
-                    <td className={`num val r-${r}`}>
-                      {r !== 'none' && <span className="dot" aria-hidden="true" />}
-                      {formatValue(m.fmt, t[m.key])}
-                      {r !== 'none' && <span className="sr-only" style={{ position: 'absolute', left: -9999 }}> ({r === 'ok' ? 'needs improvement' : r})</span>}
-                    </td>
-                    <td className="num">{d ? formatValue(m.fmt, d.previous) : '–'}</td>
-                    <td className="num"><Delta d={d} fmt={m.fmt} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {cmp && <p className="note" style={{ margin: '8px 8px 0', color: 'var(--muted)', fontSize: 13 }}>Compared with the test from {fmtDate(cmp.previousDate)}.</p>}
+        <div>
+          <div className="tiles">
+            {METRICS.map((m) => {
+              const d = cmp?.deltas[m.key];
+              const r = ['lcp', 'fcp', 'tbt', 'cls'].includes(m.key) ? rate(m.key, t[m.key]) : 'none';
+              return (
+                <div key={m.key} className={`tile r-${r}`}>
+                  <div className="t-label" title={m.label}>{m.label}</div>
+                  <div className="t-val">
+                    {formatValue(m.fmt, t[m.key])}
+                    {r !== 'none' && <span className="sr-only"> ({r === 'ok' ? 'needs improvement' : r})</span>}
+                  </div>
+                  <div className="t-foot">
+                    <Delta d={d} fmt={m.fmt} />
+                    {d && <span className="t-prev">was {formatValue(m.fmt, d.previous)}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {cmp && <p className="note" style={{ margin: '10px 0 0' }}>Compared with the test from {fmtDate(cmp.previousDate)}.</p>}
         </div>
       </div>
 

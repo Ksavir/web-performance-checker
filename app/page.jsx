@@ -53,42 +53,52 @@ export default function Home() {
   const pct = job ? Math.round((job.progress.done / Math.max(job.progress.total, 1)) * 100) : 0;
 
   return (
-    <main className="shell">
-      <header className="top">
-        <h1>Casino Performance Check</h1>
-        <p>Runs Lighthouse on a casino page, compares it with your previous test and exports a PDF.</p>
+    <div className="shell">
+      <header className="topbar">
+        <span className="brand-mark" aria-hidden="true" />
+        <div>
+          <h1>Casino Performance Check</h1>
+          <p>Test a page, compare it with your last test and export a PDF.</p>
+        </div>
       </header>
 
-      <TestForm disabled={running} onSubmit={start} />
-
-      {formError && <div className="error" role="alert">{formError}</div>}
-
-      {running && (
-        <div className="progress" role="status" aria-live="polite">
-          <strong>{job.progress.label}</strong>
-          <div className="bar"><span style={{ width: `${Math.max(pct, 4)}%` }} /></div>
-          <div className="hint" style={{ color: 'var(--muted)', marginTop: 6 }}>Lighthouse takes 30–90 seconds per run. Tests run one at a time so results stay accurate.</div>
+      <div className="workspace">
+        <div className="side">
+          <TestForm disabled={running} onSubmit={start} />
+          <History batches={history} activeId={batch?.batchId} onOpen={openBatch} />
         </div>
-      )}
 
-      {job && job.errors?.length > 0 && !running && (
-        <div className="error" role="alert">
-          {job.status === 'error' ? 'The test could not be completed.' : 'Some devices could not be tested.'}
-          <ul>{job.errors.map((e, i) => <li key={i}><strong>{e.device}:</strong> {e.message}</li>)}</ul>
-        </div>
-      )}
+        <main className="content">
+          {formError && <div className="error" role="alert">{formError}</div>}
 
-      <div className="main">
-        {batch ? (
-          <Results key={batch.batchId} batch={batch} />
-        ) : (
-          <section className="panel empty">
-            <h2>No results yet</h2>
-            <p>Enter a page URL, pick its type and choose Run test. The results, the five slowest API calls and the heaviest images and scripts will appear here, along with the change since your last test.</p>
-          </section>
-        )}
-        <History batches={history} activeId={batch?.batchId} onOpen={openBatch} />
+          {running && (
+            <div className="progress" role="status" aria-live="polite">
+              <div className="progress-head"><strong>{job.progress.label}</strong><span>{pct}%</span></div>
+              <div className="bar"><span style={{ width: `${Math.max(pct, 4)}%` }} /></div>
+              <div className="hint">Lighthouse takes 30–90 seconds per run. Tests run one at a time so results stay accurate.</div>
+            </div>
+          )}
+
+          {job && job.errors?.length > 0 && !running && (
+            <div className="error" role="alert">
+              {job.status === 'error' ? 'The test could not be completed.' : 'Some devices could not be tested.'}
+              <ul>{job.errors.map((e, i) => <li key={i}><strong>{e.device}:</strong> {e.message}</li>)}</ul>
+            </div>
+          )}
+
+          {batch ? (
+            <Results key={batch.batchId} batch={batch} />
+          ) : (
+            !running && (
+              <section className="panel empty">
+                <div className="empty-ring" aria-hidden="true" />
+                <h2>Run your first test</h2>
+                <p>Paste a page URL, choose its type and select Run test. Scores, the slowest API calls and the heaviest images and scripts will show up here.</p>
+              </section>
+            )
+          )}
+        </main>
       </div>
-    </main>
+    </div>
   );
 }
