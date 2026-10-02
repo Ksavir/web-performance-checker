@@ -208,19 +208,15 @@ th[aria-sort] .sort-btn, th[aria-sort] .sort-ind { color: var(--accent); }
 @media (hover: none) { .copy-btn { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .copy-btn, .progress .ghost-btn { transition: none; } }
 
-/* Diagnóstico: fases del LCP (rampa ordinal de un solo tono, validada) */
-.ph-timeToFirstByte { --ph: #1f3d5e; } .ph-resourceLoadDelay { --ph: #3a6694; } .ph-resourceLoadDuration { --ph: #6690be; } .ph-elementRenderDelay { --ph: #97b6d9; }
-.phase-bar { display: flex; gap: 2px; height: 14px; margin: 12px 0 10px; }
-.phase-seg { flex-basis: 0; min-width: 3px; background: var(--ph); }
-.phase-seg:last-child { border-radius: 0 4px 4px 0; }
-.phase-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13px; }
+/* Diagnóstico: fases del LCP */
+.phase-legend { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13px; }
 .phase-legend li { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.swatch { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--ph); }
 .pl-label { color: var(--muted); }
 .pl-val { font-weight: 700; }
 .tip { margin: 14px 0 0; padding: 10px 14px; background: var(--accent-soft); border-radius: var(--radius-sm); font-size: 13.5px; }
-.lcp-el { margin-top: 14px; display: grid; gap: 6px; font-size: 13.5px; min-width: 0; }
+.lcp-el { margin-top: 18px; display: grid; gap: 6px; font-size: 13.5px; min-width: 0; }
 .lcp-el code, .url-cell code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--sunken); padding: 2px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+.mini-title { margin: 0 0 2px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 .snippet { margin: 0; padding: 10px 12px; background: var(--sunken); border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 12px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* Oportunidades */

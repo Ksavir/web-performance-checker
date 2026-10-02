@@ -80,15 +80,9 @@ function LcpBreakdown({ lcp }) {
       </p>
       {total > 0 && (
         <>
-          <div className="phase-bar" role="img" aria-label={shown.map((p) => `${p.label} ${ms(p.duration)}`).join(', ')}>
-            {shown.map((p) => (
-              <span key={p.id} className={`phase-seg ph-${p.id}`} style={{ flexGrow: p.duration }} title={`${p.label}: ${ms(p.duration)} (${pct(p.duration)}%)`} />
-            ))}
-          </div>
           <ul className="phase-legend">
             {lcp.phases.map((p) => (
               <li key={p.id}>
-                <span className={`swatch ph-${p.id}`} aria-hidden="true" />
                 <span className="pl-label">{p.label}</span>
                 <span className="pl-val">{pct(p.duration)}%</span>
                 <span className="pl-label">{ms(p.duration)}</span>
@@ -102,6 +96,7 @@ function LcpBreakdown({ lcp }) {
       )}
       {lcp.element && (
         <div className="lcp-el">
+          <h4 className="mini-title">Where to find it</h4>
           <div className="lcp-el-head">
             <span>LCP element{lcp.element.label ? <>: <strong>{lcp.element.label}</strong></> : null}</span>
           </div>

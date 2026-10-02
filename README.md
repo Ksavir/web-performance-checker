@@ -88,3 +88,4 @@ lib/pdf.ts              PDF report (pdfkit)
 lib/config.ts           thresholds, page types and tips
 ```
 
+$
