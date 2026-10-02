@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import { METRICS, PAGE_TYPES, formatValue, formatBytes, rate } from './config.ts';
+import { LCP_PHASES, METRICS, OPPORTUNITIES, PAGE_TYPES, formatValue, formatBytes, rate } from './config.ts';
 import type { Comparison, Delta, MetricKey, TestRow } from './types.ts';
 
 const COLORS: Record<string, string> = { ink: '#12211B', green: '#0F4B39', muted: '#5B6B63', line: '#D5DDD8', good: '#1E8E5A', ok: '#B8860B', poor: '#C23B2E' };
@@ -92,6 +92,32 @@ export function buildPdf(items: (TestRow & { comparison: Comparison | null })[])
 
       const section = (title: string) => { ensureSpace(doc, 50); doc.font('Helvetica-Bold').fontSize(11).fillColor(COLORS.green).text(title, MARGIN, doc.y); doc.moveDown(0.3); };
 
+      const d = t.findings.diagnosis;
+      const note = (text: string) => { doc.font('Helvetica').fontSize(8.5).fillColor(COLORS.muted).text(text, MARGIN, doc.y, { width: 500 }); doc.moveDown(0.6); };
+      if (d?.lcp?.phases.length) {
+        const total = d.lcp.phases.reduce((s, p) => s + p.duration, 0);
+        const top = d.lcp.phases.reduce((m, p) => (p.duration > m.duration ? p : m));
+        section('What delays the Largest Contentful Paint');
+        table(doc, ['Phase', 'Duration', 'Share'],
+          d.lcp.phases.map((p) => [p.label, formatValue('ms', p.duration), `${Math.round((p.duration / Math.max(total, 1)) * 100)}%`]),
+          [250, 90, 90]);
+        note(`Measured on the real, unthrottled load (${formatValue('ms', total)}); the LCP metric above is simulated on a throttled connection, so compare shares, not times.`);
+        if (LCP_PHASES[top.id]) note(`Biggest share: ${top.label}. ${LCP_PHASES[top.id].tip}`);
+        if (d.lcp.element?.selector) note(`LCP element: ${d.lcp.element.label ? d.lcp.element.label + ' - ' : ''}${d.lcp.element.selector}`);
+      }
+      if (d?.opportunities.length) {
+        section('Top opportunities');
+        table(doc, ['Opportunity', 'Time saved', 'Bytes saved'],
+          d.opportunities.map((o) => [o.title, o.savingsMs ? `${formatValue('ms', o.savingsMs)} ${o.metric}` : '-', o.savingsBytes ? formatBytes(Math.round(o.savingsBytes)) : '-']),
+          [280, 110, 110]);
+        d.opportunities.slice(0, 3).forEach((o) => note(`${o.title}: ${OPPORTUNITIES[o.id]?.tip ?? ''}`));
+      }
+      if (d && d.longTasks.count && d.longTasks.longest) {
+        section('Main-thread work');
+        note(`${d.longTasks.count} long tasks (${formatValue('ms', d.longTasks.totalMs)} in total). Longest: ${formatValue('ms', d.longTasks.longest.duration)} from ${shortUrl(d.longTasks.longest.url)}.`);
+        table(doc, ['Script', 'CPU time'], d.mainThread.map((r) => [shortUrl(r.url, 85), formatValue('ms', r.total)]), [400, 100]);
+      }
+
       section('Five slowest API requests');
       table(doc, ['Request', 'Duration', 'Status', 'Size'],
         t.findings.slowApis.map((r) => [shortUrl(r.url, 62), `${Math.round(r.duration)} ms`, r.status ?? '-', formatBytes(r.size)]),
@@ -105,7 +131,7 @@ export function buildPdf(items: (TestRow & { comparison: Comparison | null })[])
 
       const sv = t.findings.savings || {};
       const sr = Object.entries({ 'Unused JavaScript': sv.unusedJs, 'Unminified JavaScript': sv.unminifiedJs, 'Oversized images': sv.oversizedImages, 'Modern image formats': sv.modernImageFormats }).filter(([, v]) => v != null);
-      if (sr.length) { section('Estimated savings reported by Lighthouse'); table(doc, ['Opportunity', 'Potential savings'], sr.map(([k, v]) => [k, formatBytes(v)]), [300, 150]); }
+      if (!d && sr.length) { section('Estimated savings reported by Lighthouse'); table(doc, ['Opportunity', 'Potential savings'], sr.map(([k, v]) => [k, formatBytes(v)]), [300, 150]); }
     });
 
     doc.end();

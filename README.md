@@ -1,45 +1,90 @@
 # Casino Performance Check
 
-Herramienta web independiente (Next.js + Lighthouse) para medir el rendimiento de páginas de casino.
+A small, self-hosted web tool (Next.js + Lighthouse) that measures how fast casino pages load — homepage, lobby, promotions and login — and explains **why** a page is slow and **what to fix first**. Each test is saved in your browser, compared with the previous one, and can be exported as a PDF report.
 
-## Requisitos
-- Node.js 20 o superior
-- Google Chrome o Chromium instalado (Lighthouse lo necesita). Si no se detecta solo:
-  `CHROME_PATH="/ruta/al/chrome" npm run dev`
+![Overview: test form, score, Core Web Vitals and LCP diagnosis](docs/screenshots/overview.png)
 
-## Uso
+## Requirements
+
+- **Node.js 22.19 or later** (required by Lighthouse 13).
+- **Google Chrome or Chromium** installed on the machine running the server. Lighthouse drives it in headless mode.
+  If it is not detected automatically, point to it with `CHROME_PATH`:
+  ```bash
+  CHROME_PATH="/path/to/chrome" npm run dev
+  ```
+
+## Getting started
+
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev          # http://localhost:3000
 ```
 
-Producción: `npm run build && npm start`
+Production build:
 
-## Qué hace
-- Recibe una URL y un tipo de página (Homepage, Lobby, Promotions, Login). Cada tipo recuerda su última URL.
-- Ejecuta Lighthouse en móvil y/o escritorio (1 corrida, o 3 con mediana).
-- Las pruebas se ejecutan de a una: la app muestra la posición en la cola, el tiempo restante estimado (según la duración de las últimas corridas) y permite cancelar.
-- Muestra: Performance score, LCP, FCP, TBT, CLS, peso de página y número de peticiones.
-- Lista las 5 peticiones API más lentas, imágenes > 200 KB y JavaScript > 150 KB (tablas ordenables por columna; cada URL se puede copiar completa).
-- Guarda cada prueba en el navegador (localStorage, clave `casino-perf:tests`; botón «Clear history» para borrarla) y compara con la anterior de la misma URL + tipo + dispositivo.
-- Exporta el informe en PDF (móvil y escritorio, con comparación).
-
-## Estructura
-```
-lib/lighthouse.js   ejecuta Lighthouse (Chrome headless)
-lib/analyze.js      convierte el informe en métricas y hallazgos (función pura)
-lib/queue.js        cola en memoria: una prueba a la vez
-lib/storage.ts      Historial en localStorage (cliente)
-lib/compare.js      reglas de mejora/empeora
-lib/pdf.js          informe PDF (pdfkit)
-lib/config.js       umbrales y tipos de página  <-- ajustar aquí "sobredimensionado"
-app/api/*           endpoints
-app/page.jsx        interfaz
+```bash
+npm run build
+npm start
 ```
 
-## Limitaciones conocidas del prototipo
-- La cola es en memoria: si el servidor se reinicia durante una prueba, esa prueba se pierde (los resultados ya guardados no).
-- Login se mide como página pública, sin autenticar.
-- Sitios con anti-bot, verificación de edad o geobloqueo pueden dar resultados distintos; la app avisa si detecta HTTP 4xx o una redirección.
-- No hay autenticación de usuarios: usar en local o red interna. La app acepta cualquier URL http(s), incluidas las internas.
-- Las "peticiones API" se detectan por tipo XHR/Fetch, respuesta JSON o rutas `/api`, `/graphql`.
+### Running a test
+
+1. Choose the **page type** (Homepage, Lobby, Promotions or Login). Each type remembers its last URL.
+2. Paste the **page URL**.
+3. Select **Mobile**, **Desktop** or both.
+4. Choose the **accuracy**: 1 run per device (about 1 min), or 3 runs and keep the median (more stable).
+5. Click **Run test**. Tests run one at a time; the app shows your position in the queue, the estimated time left, and lets you cancel.
+
+> Only test sites you own or have permission to test.
+
+## What you get
+
+### Headline metrics
+Performance score (0–100) and the main Lighthouse metrics: **LCP, FCP, TBT, CLS**, page weight and number of requests. Values are colored green / yellow / red using Google's thresholds, and each one shows the change since the previous test of the same URL, page type and device.
+
+### Diagnosis — why the page is slow
+![LCP breakdown and top opportunities](docs/screenshots/diagnosis.png)
+
+- **What delays the Largest Contentful Paint:** the LCP time split into its four phases (time to first byte, load delay, load time, render delay), with a concrete tip for the biggest one. It also shows the LCP element, its CSS selector (copyable) and its HTML snippet.
+- **Top opportunities:** Lighthouse audits that failed (unused JavaScript, image delivery, cache lifetimes, legacy JavaScript, fonts…), sorted by estimated time saved. Each one has a practical tip and expands to list the files involved and why.
+- **Render-blocking requests:** CSS and JS that delay the first paint.
+- **Main-thread work:** long tasks and CPU time per script, which explain a high TBT.
+
+### Findings
+![Findings: slowest API requests, oversized images and scripts](docs/screenshots/findings.png)
+
+Collapsible sections with a one-line summary, sortable columns and a button to copy each full URL:
+
+- **Five slowest API requests** (XHR/fetch, JSON responses, `/api` and `/graphql` routes).
+- **Oversized images** (> 200 KB) with a thumbnail preview, a link that opens the image in a new tab, the reason Lighthouse flags it, and the estimated savings.
+- **Oversized JavaScript files** (> 150 KB) with how much of each file goes unused on load.
+
+### History and reports
+- Every test is saved in the browser (`localStorage`, key `casino-perf:tests`, last 100 tests), grouped in tabs by page type. You can delete a single test or clear the whole history.
+- **Export PDF** creates a report with the metrics, the comparison with the previous test, the diagnosis and the findings for each device.
+
+## Configuration
+
+Thresholds and page types live in [`lib/config.ts`](lib/config.ts):
+
+- `THRESHOLDS`: what counts as an oversized image or script.
+- `RATINGS`: the good / poor limits used for colors.
+- `LCP_PHASES` and `OPPORTUNITIES`: the tips shown in the diagnosis. Edit them to match your stack.
+- `PAGE_TYPES`: the page types offered in the form.
+
+## Project structure
+
+```
+app/page.jsx            main page: form, queue progress, results, history
+app/components/         TestForm, Results, History, ScoreChip
+app/api/test            POST: queue a test · GET/DELETE /api/test/[id]: status / cancel
+app/api/report          POST: build the PDF report
+lib/lighthouse.ts       runs Lighthouse in headless Chrome
+lib/analyze.ts          turns the Lighthouse report into metrics, diagnosis and findings (pure function)
+lib/queue.ts            in-memory queue: one test at a time, ETA and cancellation
+lib/storage.ts          history in localStorage (client side)
+lib/compare.ts          better / worse rules against the previous test
+lib/pdf.ts              PDF report (pdfkit)
+lib/config.ts           thresholds, page types and tips
+```
+

@@ -24,10 +24,41 @@ export interface Request {
   size: number;
 }
 
+export interface LcpPhase {
+  id: string;
+  label: string;
+  duration: number;
+}
+
+export interface Opportunity {
+  id: string;
+  title: string;
+  savingsBytes?: number;
+  savingsMs?: number;
+  /** Métrica en la que Lighthouse estima el ahorro de tiempo (LCP, FCP, TBT...). */
+  metric?: string;
+  items: { url: string; wasted?: number; wastedMs?: number; detail?: string }[];
+}
+
+/** Por qué la página es lenta (pruebas anteriores a esta versión no lo tienen). */
+export interface Diagnosis {
+  lcp: {
+    element: { label: string; selector: string; snippet: string } | null;
+    phases: LcpPhase[];
+  } | null;
+  renderBlocking: { url: string; size: number; ms: number }[];
+  mainThread: { url: string; total: number; scripting: number; parse: number }[];
+  longTasks: { count: number; totalMs: number; longest: { url: string; duration: number } | null };
+  opportunities: Opportunity[];
+}
+
 export interface Findings {
   slowApis: Pick<Request, 'url' | 'duration' | 'status' | 'size' | 'type'>[];
-  bigImages: Pick<Request, 'url' | 'size' | 'mime'>[];
-  bigScripts: Pick<Request, 'url' | 'size'>[];
+  /** hint: motivo que da Lighthouse para esa imagen (tamaño o formato). */
+  bigImages: (Pick<Request, 'url' | 'size' | 'mime'> & { hint?: string; wasted?: number })[];
+  /** unused: bytes del script que no se ejecutan al cargar. */
+  bigScripts: (Pick<Request, 'url' | 'size'> & { unused?: number })[];
+  diagnosis?: Diagnosis;
   savings: {
     unusedJs?: number;
     unminifiedJs?: number;

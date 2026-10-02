@@ -113,6 +113,7 @@ button, input, select { font: inherit; color: inherit; }
 .tile::before { content: ''; position: absolute; left: 14px; top: 0; width: 22px; height: 3px; border-radius: 0 0 3px 3px; background: var(--c, var(--line-strong)); }
 .tile .t-label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
 .tile .t-val { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+.tile.r-good .t-val { color: #34a853; } .tile.r-ok .t-val { color: #fbbc05; } .tile.r-poor .t-val { color: #ea4335; }
 .tile .t-foot { font-size: 12.5px; margin-top: 2px; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline; }
 .tile .t-prev { color: var(--faint); }
 .d-better { color: var(--good); font-weight: 600; }
@@ -206,3 +207,66 @@ th[aria-sort] .sort-btn, th[aria-sort] .sort-ind { color: var(--accent); }
 .copy-btn:hover { color: var(--accent); background: var(--accent-soft); }
 @media (hover: none) { .copy-btn { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .copy-btn, .progress .ghost-btn { transition: none; } }
+
+/* Diagnóstico: fases del LCP (rampa ordinal de un solo tono, validada) */
+.ph-timeToFirstByte { --ph: #1f3d5e; } .ph-resourceLoadDelay { --ph: #3a6694; } .ph-resourceLoadDuration { --ph: #6690be; } .ph-elementRenderDelay { --ph: #97b6d9; }
+.phase-bar { display: flex; gap: 2px; height: 14px; margin: 12px 0 10px; }
+.phase-seg { flex-basis: 0; min-width: 3px; background: var(--ph); }
+.phase-seg:last-child { border-radius: 0 4px 4px 0; }
+.phase-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13px; }
+.phase-legend li { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.swatch { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--ph); }
+.pl-label { color: var(--muted); }
+.pl-val { font-weight: 700; }
+.tip { margin: 14px 0 0; padding: 10px 14px; background: var(--accent-soft); border-radius: var(--radius-sm); font-size: 13.5px; }
+.lcp-el { margin-top: 14px; display: grid; gap: 6px; font-size: 13.5px; min-width: 0; }
+.lcp-el code, .url-cell code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--sunken); padding: 2px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+.snippet { margin: 0; padding: 10px 12px; background: var(--sunken); border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 12px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Oportunidades */
+.opps { display: grid; gap: 8px; margin-top: 4px; }
+.opp { border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.opp summary { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 10px 14px; cursor: pointer; list-style: none; }
+.opp summary::-webkit-details-marker { display: none; }
+.opp summary::before { content: '›'; color: var(--faint); font-weight: 700; transition: transform .15s; }
+.opp[open] summary::before { transform: rotate(90deg); }
+.opp summary:hover { background: var(--sunken); border-radius: var(--radius-sm); }
+.opp-title { font-weight: 600; font-size: 14px; flex: 1; min-width: 160px; }
+.opp-impact { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { display: inline-block; padding: 1px 9px; border-radius: 99px; font-size: 12.5px; font-weight: 700; color: var(--accent); background: var(--accent-soft); white-space: nowrap; }
+.badge-muted { color: var(--muted); background: var(--sunken); font-weight: 600; }
+.opp-tip { margin: 0; padding: 0 14px 8px 32px; font-size: 13.5px; color: var(--muted); }
+.opp .table-wrap { padding: 0 14px 6px 32px; }
+.row-hint { margin-top: 3px; font-size: 12.5px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .opp summary::before { transition: none; } }
+
+/* Historial: pestañas por tipo de página */
+.hist-tabs { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 10px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.hist-tab { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 6px 1px 8px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.hist-tab:hover { color: var(--ink); }
+.hist-tab[aria-selected='true'] { color: var(--accent); border-bottom-color: var(--accent); }
+.hist-count { min-width: 17px; padding: 0 4px; border-radius: 99px; background: var(--sunken); color: var(--muted); font-size: 11.5px; line-height: 18px; text-align: center; }
+.hist-tab[aria-selected='true'] .hist-count { background: var(--accent-soft); color: var(--accent); }
+
+/* Acordeones de hallazgos */
+.acc { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.section > .acc:first-child { margin-top: 20px; }
+.acc summary { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; list-style: none; border-radius: var(--radius-sm); }
+.acc summary::-webkit-details-marker { display: none; }
+.acc summary::before { content: '›'; color: var(--faint); font-weight: 700; transition: transform .15s; }
+.acc[open] summary::before { transform: rotate(90deg); }
+.acc[open] summary { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.acc summary:hover { background: var(--sunken); }
+.section .acc-title { margin: 0; flex: 1; font-size: 15px; }
+.acc-body { padding: 0 16px 12px 34px; }
+@media (prefers-reduced-motion: reduce) { .acc summary::before { transition: none; } }
+
+/* Imágenes sobredimensionadas: miniatura y enlace */
+.img-row { display: flex; align-items: flex-start; gap: 12px; }
+.img-info { min-width: 0; }
+.thumb { flex: none; width: 64px; height: 48px; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 7px; background: var(--sunken); color: var(--faint); transition: border-color .15s; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb:hover { border-color: var(--accent); }
+.url-link { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.url-link:hover { color: var(--accent); text-decoration-color: currentColor; }
+@media (prefers-reduced-motion: reduce) { .thumb { transition: none; } }
