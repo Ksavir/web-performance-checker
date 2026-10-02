@@ -42,7 +42,7 @@ button, input, select { font: inherit; color: inherit; }
 .topbar p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
 
 .workspace { display: grid; gap: 20px; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 960px) { .workspace { grid-template-columns: 340px minmax(0, 1fr); } .side { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; } }
+@media (min-width: 960px) { .workspace { grid-template-columns: 360px minmax(0, 1fr); } }
 .side, .content { display: grid; gap: 16px; min-width: 0; }
 .side { align-content: start; }
 
@@ -150,7 +150,7 @@ button, input, select { font: inherit; color: inherit; }
 /* Borrar historial */
 .hist-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .hist-head h2 { margin: 0; }
-.hist .link-btn { width: auto; padding: 4px 8px; font-size: 13px; font-weight: 600; color: var(--muted); border-radius: 6px; }
+.hist .link-btn { width: auto; padding: 4px 8px; border: 0; background: none; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); border-radius: 6px; }
 .hist .link-btn:hover { color: var(--poor); background: var(--poor-soft); }
 .confirm { background: var(--poor-soft); border: 1px solid #e6c4c0; border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; font-size: 13.5px; }
 .confirm p { margin: 0 0 10px; color: #692a25; }
