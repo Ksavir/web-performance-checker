@@ -1,8 +1,6 @@
 import PDFDocument from 'pdfkit';
 import { METRICS, PAGE_TYPES, formatValue, formatBytes, rate } from './config.ts';
-import { compare } from './compare.ts';
-import { getPrevious } from './db.ts';
-import type { Delta, MetricKey, TestRow } from './types.ts';
+import type { Comparison, Delta, MetricKey, TestRow } from './types.ts';
 
 const COLORS: Record<string, string> = { ink: '#12211B', green: '#0F4B39', muted: '#5B6B63', line: '#D5DDD8', good: '#1E8E5A', ok: '#B8860B', poor: '#C23B2E' };
 const MARGIN = 48;
@@ -48,7 +46,8 @@ function deltaText(d: Delta | undefined, key: MetricKey): string {
 }
 
 /** Genera el PDF de un lote (mobile + desktop) y devuelve un Buffer. */
-export function buildPdf(tests: TestRow[]): Promise<Buffer> {
+export function buildPdf(items: (TestRow & { comparison: Comparison | null })[]): Promise<Buffer> {
+  const tests = items;
   return new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: MARGIN, info: { Title: 'Casino performance report' } });
     const chunks: Buffer[] = [];
@@ -69,7 +68,7 @@ export function buildPdf(tests: TestRow[]): Promise<Buffer> {
 
     tests.forEach((t, idx) => {
       if (idx > 0) doc.addPage();
-      const cmp = compare(t, getPrevious(t));
+      const cmp = t.comparison;
       doc.font('Helvetica-Bold').fontSize(15).fillColor(COLORS.green).text(t.device === 'mobile' ? 'Mobile' : 'Desktop');
       doc.moveDown(0.2).font('Helvetica-Bold').fontSize(12).fillColor(COLORS[rate('score', t.score) === 'none' ? 'ink' : rate('score', t.score)])
         .text(`Performance score: ${t.score} / 100`);

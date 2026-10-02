@@ -1,10 +1,9 @@
 import crypto from 'node:crypto';
 import { runLighthouse } from './lighthouse.ts';
 import { pickMedian } from './analyze.ts';
-import { saveTest } from './db.ts';
 import type { Device, Job, PageType, TestResult } from './types.ts';
 
-// Estado en memoria (sobrevive al hot-reload). Lighthouse corre de a una prueba a la vez
+// Estado en memoria (el historial se guarda en el navegador, en localStorage) (sobrevive al hot-reload). Lighthouse corre de a una prueba a la vez
 // para que las mediciones no compitan por CPU y se distorsionen entre sí.
 const g = globalThis as typeof globalThis & { __jobs?: Map<string, Job>; __chain?: Promise<unknown> };
 const jobs = (g.__jobs ??= new Map<string, Job>());
@@ -19,6 +18,7 @@ export function enqueue({ url, pageType, devices, runs }: { url: string; pageTyp
     status: 'queued',
     progress: { done: 0, total: devices.length * runs, label: 'Waiting in queue' },
     errors: [],
+    results: [],
     createdAt: Date.now(),
   };
   jobs.set(id, job);
@@ -46,7 +46,7 @@ async function runJob(job: Job) {
       job.progress.done += 1;
     }
     if (results.length) {
-      saveTest({ batchId: job.batchId, url: job.url, pageType: job.pageType, device, runs: results.length, result: pickMedian(results) });
+      job.results.push({ device, runs: results.length, result: pickMedian(results) });
       saved++;
     }
   }

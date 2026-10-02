@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import TestForm from './components/TestForm';
 import Results from './components/Results';
 import History from './components/History';
+import { clearAll, deleteBatch, getBatch, listBatches, saveBatch } from '@/lib/storage';
 
 export default function Home() {
   const [job, setJob] = useState(null);
@@ -11,22 +12,25 @@ export default function Home() {
   const [formError, setFormError] = useState('');
   const timer = useRef(null);
 
-  const loadHistory = useCallback(async () => {
-    try {
-      const res = await fetch('/api/history', { cache: 'no-store' });
-      setHistory((await res.json()).batches || []);
-    } catch { /* ignore */ }
-  }, []);
+  const loadHistory = useCallback(() => setHistory(listBatches()), []);
 
   useEffect(() => {
     loadHistory();
     return () => clearTimeout(timer.current);
   }, [loadHistory]);
 
-  const openBatch = useCallback(async (id) => {
-    const res = await fetch(`/api/batch/${id}`, { cache: 'no-store' });
-    if (res.ok) setBatch(await res.json());
+  const openBatch = useCallback((id) => {
+    const results = getBatch(id);
+    if (results.length) setBatch({ batchId: id, results });
   }, []);
+
+  const removeBatch = (id) => {
+    deleteBatch(id);
+    if (batch?.batchId === id) setBatch(null);
+    loadHistory();
+  };
+
+  const clearHistory = () => { clearAll(); setBatch(null); loadHistory(); };
 
   const poll = useCallback(async (jobId) => {
     try {
@@ -34,8 +38,16 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) { setJob(null); setFormError(data.error); return; }
       setJob({ id: jobId, ...data });
-      if (data.status === 'done') { await openBatch(data.batchId); loadHistory(); return; }
-      if (data.status === 'error') { loadHistory(); return; }
+      if (data.status === 'done') {
+        if (!saveBatch(jobId, data.url, data.pageType, data.results)) {
+          setFormError('The results could not be saved in this browser (storage is full or blocked). Clear the history and run the test again.');
+          return;
+        }
+        loadHistory();
+        openBatch(jobId);
+        return;
+      }
+      if (data.status === 'error') return;
     } catch { setFormError('Lost connection to the server.'); return; }
     timer.current = setTimeout(() => poll(jobId), 2000);
   }, [openBatch, loadHistory]);
@@ -58,14 +70,14 @@ export default function Home() {
         <span className="brand-mark" aria-hidden="true" />
         <div>
           <h1>Casino Performance Check</h1>
-          <p>Test a page, compare it with your last test and export a PDF.</p>
+          <p>Test a URL page, compare it with your last test and export a PDF.</p>
         </div>
       </header>
 
       <div className="workspace">
         <div className="side">
           <TestForm disabled={running} onSubmit={start} />
-          <History batches={history} activeId={batch?.batchId} onOpen={openBatch} />
+          <History batches={history} activeId={batch?.batchId} onOpen={openBatch} onClear={clearHistory} onDelete={removeBatch} />
         </div>
 
         <main className="content">
@@ -75,7 +87,7 @@ export default function Home() {
             <div className="progress" role="status" aria-live="polite">
               <div className="progress-head"><strong>{job.progress.label}</strong><span>{pct}%</span></div>
               <div className="bar"><span style={{ width: `${Math.max(pct, 4)}%` }} /></div>
-              <div className="hint">Lighthouse takes 30–90 seconds per run. Tests run one at a time so results stay accurate.</div>
+              <div className="hint"> Takes 30–90 seconds per run </div>
             </div>
           )}
 

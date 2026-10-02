@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Casino Performance Check',
+  title: 'Web Performance Check',
   description: 'Run Lighthouse on casino pages, compare with the previous test and export a PDF.',
 };
 

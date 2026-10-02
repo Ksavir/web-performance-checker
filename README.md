@@ -12,7 +12,6 @@ Herramienta web independiente (Next.js + Lighthouse) para medir el rendimiento d
 npm install
 npm run dev        # http://localhost:3000
 ```
-Para ver la interfaz con datos de ejemplo sin ejecutar Lighthouse: `npm run seed` (antes de `npm run dev`).
 
 Producción: `npm run build && npm start`
 
@@ -21,7 +20,7 @@ Producción: `npm run build && npm start`
 - Ejecuta Lighthouse en móvil y/o escritorio (1 corrida, o 3 con mediana).
 - Muestra: Performance score, LCP, FCP, TBT, CLS, peso de página y número de peticiones.
 - Lista las 5 peticiones API más lentas, imágenes > 200 KB y JavaScript > 150 KB.
-- Guarda cada prueba en SQLite (`data/lighthouse.db`) y compara con la anterior de la misma URL + tipo + dispositivo.
+- Guarda cada prueba en el navegador (localStorage, clave `casino-perf:tests`; botón «Clear history» para borrarla) y compara con la anterior de la misma URL + tipo + dispositivo.
 - Exporta el informe en PDF (móvil y escritorio, con comparación).
 
 ## Estructura
@@ -29,7 +28,7 @@ Producción: `npm run build && npm start`
 lib/lighthouse.js   ejecuta Lighthouse (Chrome headless)
 lib/analyze.js      convierte el informe en métricas y hallazgos (función pura)
 lib/queue.js        cola en memoria: una prueba a la vez
-lib/db.js           SQLite (better-sqlite3)
+lib/storage.ts      Historial en localStorage (cliente)
 lib/compare.js      reglas de mejora/empeora
 lib/pdf.js          informe PDF (pdfkit)
 lib/config.js       umbrales y tipos de página  <-- ajustar aquí "sobredimensionado"

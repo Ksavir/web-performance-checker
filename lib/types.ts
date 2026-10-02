@@ -81,5 +81,6 @@ export interface Job {
   status: 'queued' | 'running' | 'done' | 'error';
   progress: { done: number; total: number; label: string };
   errors: { device: Device; message: string }[];
+  results: { device: Device; runs: number; result: TestResult }[];
   createdAt: number;
 }

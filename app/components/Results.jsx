@@ -146,6 +146,22 @@ export default function Results({ batch }) {
   const [active, setActive] = useState(results[0].device);
   const current = results.find((r) => r.device === active) || results[0];
   const first = results[0];
+  const [busy, setBusy] = useState(false);
+  const [pdfError, setPdfError] = useState('');
+
+  const exportPdf = async () => {
+    setBusy(true); setPdfError('');
+    try {
+      const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results }) });
+      if (!res.ok) throw new Error();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(await res.blob());
+      a.download = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '')?.[1] || 'report.pdf';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch { setPdfError('The PDF could not be created. Try again.'); }
+    setBusy(false);
+  };
 
   return (
     <section className="panel" aria-label="Test results">
@@ -154,8 +170,9 @@ export default function Results({ batch }) {
           <h2>{PAGE_TYPES.find((p) => p.id === first.pageType)?.label} · {fmtDate(first.createdAt)}</h2>
           <div className="sub">{first.url}{first.runs > 1 ? ` · median of ${first.runs} runs` : ''}</div>
         </div>
-        <a className="pdf-btn" href={`/api/report/${batch.batchId}`}>Export PDF</a>
+        <button type="button" className="pdf-btn" onClick={exportPdf} disabled={busy}>{busy ? 'Preparing PDF…' : 'Export PDF'}</button>
       </div>
+      {pdfError && <div className="error" role="alert" style={{ margin: '0 24px 16px' }}>{pdfError}</div>}
       {results.length > 1 && (
         <div className="tabs" role="tablist">
           {results.map((r) => (
