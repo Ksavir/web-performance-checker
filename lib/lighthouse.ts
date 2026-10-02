@@ -10,7 +10,8 @@ const RUN_TIMEOUT_MS = 3 * 60 * 1000;
  * Ejecuta Lighthouse una vez (mobile o desktop) y devuelve el resultado normalizado.
  * Requiere Chrome/Chromium instalado (o CHROME_PATH apuntando al ejecutable).
  */
-export async function runLighthouse(url: string, device: Device): Promise<TestResult> {
+export async function runLighthouse(url: string, device: Device, signal?: AbortSignal): Promise<TestResult> {
+  signal?.throwIfAborted();
   let chrome: chromeLauncher.LaunchedChrome;
   try {
     chrome = await chromeLauncher.launch({
@@ -22,6 +23,7 @@ export async function runLighthouse(url: string, device: Device): Promise<TestRe
   }
 
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let onAbort: (() => void) | undefined;
   try {
     const flags = {
       port: chrome.port,
@@ -35,11 +37,18 @@ export async function runLighthouse(url: string, device: Device): Promise<TestRe
     const timeout = new Promise<never>((_, reject) => {
       timer = setTimeout(() => reject(new Error('Lighthouse timed out after 3 minutes.')), RUN_TIMEOUT_MS);
     });
-    const result = await Promise.race([lighthouse(url, flags, config), timeout]);
+    // Al cancelar se cierra Chrome y se rechaza de inmediato (Lighthouse falla por su cuenta después).
+    const aborted = new Promise<never>((_, reject) => {
+      onAbort = () => { try { chrome.kill(); } catch { /* ignore */ } reject(signal!.reason); };
+      if (signal?.aborted) onAbort();
+      else signal?.addEventListener('abort', onAbort, { once: true });
+    });
+    const result = await Promise.race([lighthouse(url, flags, config), timeout, aborted]);
     if (!result?.lhr) throw new Error('Lighthouse returned no report.');
     return extract(result.lhr, url);
   } finally {
     clearTimeout(timer);
+    if (onAbort) signal?.removeEventListener('abort', onAbort);
     try { await chrome.kill(); } catch { /* ignore */ }
   }
 }

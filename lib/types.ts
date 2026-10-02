@@ -78,7 +78,7 @@ export interface Job {
   pageType: PageType;
   devices: Device[];
   runs: number;
-  status: 'queued' | 'running' | 'done' | 'error';
+  status: 'queued' | 'running' | 'done' | 'error' | 'cancelled';
   progress: { done: number; total: number; label: string };
   errors: { device: Device; message: string }[];
   results: { device: Device; runs: number; result: TestResult }[];

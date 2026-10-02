@@ -15,7 +15,7 @@ const STORAGE_KEY = 'casino-perf:urls';
 export default function TestForm({ disabled, onSubmit }) {
   const [pageType, setPageType] = useState('homepage');
   const [urls, setUrls] = useState({});
-  const [devices, setDevices] = useState({ mobile: false, desktop: true });
+  const [devices, setDevices] = useState({ mobile: true, desktop: true });
   const [runs, setRuns] = useState('1');
 
   // Recuerda la última URL usada para cada tipo de página.
@@ -45,13 +45,7 @@ export default function TestForm({ disabled, onSubmit }) {
   return (
     <form className="panel form" onSubmit={submit}>
       <h2>New test</h2>
-      <div className="field">
-        <label htmlFor="url">Page URL</label>
-        <input id="url" className="url-input" type="text" inputMode="url" autoComplete="off" spellCheck={false}
-          placeholder="https://www.example-casino.com/" value={urls[pageType] || ''} onChange={(e) => setUrl(e.target.value)} />
-      </div>
-
-      {/* <fieldset className="field">
+      <fieldset className="field">
         <legend>Page type</legend>
         <div className="seg seg-grid">
           {PAGE_TYPES.map((p) => (
@@ -62,7 +56,13 @@ export default function TestForm({ disabled, onSubmit }) {
           ))}
         </div>
         <p className="hint">Each page type remembers its own URL.</p>
-      </fieldset> */}
+      </fieldset>
+
+      <div className="field">
+        <label htmlFor="url">Page URL</label>
+        <input id="url" className="url-input" type="text" inputMode="url" autoComplete="off" spellCheck={false}
+          placeholder="https://www.example-casino.com/" value={urls[pageType] || ''} onChange={(e) => setUrl(e.target.value)} />
+      </div>
 
       <fieldset className="field">
         <legend>Test on</legend>

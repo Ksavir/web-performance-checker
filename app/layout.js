@@ -3,6 +3,7 @@ import './globals.css';
 export const metadata = {
   title: 'Web Performance Check',
   description: 'Run Lighthouse on casino pages, compare with the previous test and export a PDF.',
+  icons: { icon: '/logo.svg' },
 };
 
 export default function RootLayout({ children }) {

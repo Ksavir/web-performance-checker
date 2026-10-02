@@ -18,8 +18,9 @@ Producción: `npm run build && npm start`
 ## Qué hace
 - Recibe una URL y un tipo de página (Homepage, Lobby, Promotions, Login). Cada tipo recuerda su última URL.
 - Ejecuta Lighthouse en móvil y/o escritorio (1 corrida, o 3 con mediana).
+- Las pruebas se ejecutan de a una: la app muestra la posición en la cola, el tiempo restante estimado (según la duración de las últimas corridas) y permite cancelar.
 - Muestra: Performance score, LCP, FCP, TBT, CLS, peso de página y número de peticiones.
-- Lista las 5 peticiones API más lentas, imágenes > 200 KB y JavaScript > 150 KB.
+- Lista las 5 peticiones API más lentas, imágenes > 200 KB y JavaScript > 150 KB (tablas ordenables por columna; cada URL se puede copiar completa).
 - Guarda cada prueba en el navegador (localStorage, clave `casino-perf:tests`; botón «Clear history» para borrarla) y compara con la anterior de la misma URL + tipo + dispositivo.
 - Exporta el informe en PDF (móvil y escritorio, con comparación).
 
