@@ -134,7 +134,7 @@ export default function Home() {
             !running && (
               <section className="panel empty">
                 <div className="empty-ring" aria-hidden="true" />
-                <h2>Run your first test</h2>
+                <h2>{history.length > 0 ? 'Run a test' : 'Run your first test'}</h2>
                 <p>Paste a page URL, choose its type and select Run test. Scores, the slowest API calls and the heaviest images and scripts will show up here.</p>
               </section>
             )

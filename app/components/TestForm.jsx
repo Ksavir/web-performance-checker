@@ -61,7 +61,7 @@ export default function TestForm({ disabled, onSubmit }) {
       <div className="field">
         <label htmlFor="url">Page URL</label>
         <input id="url" className="url-input" type="text" inputMode="url" autoComplete="off" spellCheck={false}
-          placeholder="https://www.example-casino.com/" value={urls[pageType] || ''} onChange={(e) => setUrl(e.target.value)} />
+          placeholder="https://www.example.com/" value={urls[pageType] || ''} onChange={(e) => setUrl(e.target.value)} />
       </div>
 
       <fieldset className="field">
