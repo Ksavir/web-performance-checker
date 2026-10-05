@@ -1,7 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { LCP_PHASES, METRICS, OPPORTUNITIES, PAGE_TYPES, formatValue, formatBytes, rate } from '@/lib/config';
+import { summarize } from '@/lib/summarize';
 import ScoreChip from './ScoreChip';
+import Summary from './Summary';
 
 const fmtDate = (iso) => new Date(iso).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
 const shortUrl = (u) => { try { const x = new URL(u); return x.host + x.pathname + x.search; } catch { return u; } };
@@ -361,6 +363,16 @@ export default function Results({ batch }) {
   const first = results[0];
   const [busy, setBusy] = useState(false);
   const [pdfError, setPdfError] = useState('');
+  const [view, setView] = useState('result'); // 'result' | 'summary'
+  const summary = useMemo(() => summarize(current), [current]);
+
+  const onViewKey = (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const next = view === 'result' ? 'summary' : 'result';
+    setView(next);
+    document.getElementById(`vt-${next}`)?.focus();
+  };
 
   const exportPdf = async () => {
     setBusy(true); setPdfError('');
@@ -378,6 +390,17 @@ export default function Results({ batch }) {
 
   return (
     <section className="panel" aria-label="Test results">
+      <div className="view-tabs" role="tablist" aria-label="Result view" onKeyDown={onViewKey}>
+        <button type="button" role="tab" id="vt-result" className="view-tab" aria-selected={view === 'result'} aria-controls="view-panel" tabIndex={view === 'result' ? 0 : -1} onClick={() => setView('result')}>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6" /></svg>
+          Test result
+        </button>
+        <button type="button" role="tab" id="vt-summary" className="view-tab" aria-selected={view === 'summary'} aria-controls="view-panel" tabIndex={view === 'summary' ? 0 : -1} onClick={() => setView('summary')}>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" /></svg>
+          Summarize
+          {summary.actions.length > 0 && <span className="view-count" title={`${summary.actions.length} suggestions`}>{summary.actions.length}</span>}
+        </button>
+      </div>
       <div className="res-head">
         <div>
           <h2>{PAGE_TYPES.find((p) => p.id === first.pageType)?.label} · {fmtDate(first.createdAt)}</h2>
@@ -395,7 +418,9 @@ export default function Results({ batch }) {
           ))}
         </div>
       )}
-      <DeviceResult key={current.id} t={current} />
+      <div id="view-panel" role="tabpanel" aria-labelledby={`vt-${view}`}>
+        {view === 'result' ? <DeviceResult key={current.id} t={current} /> : <Summary key={current.id} summary={summary} />}
+      </div>
     </section>
   );
 }

@@ -39,6 +39,20 @@ npm start
 
 ## What you get
 
+Results open in two browser-style tabs: **Test result** (the full detail, below) and **Summarize** (everything that was found, boiled down to what to fix first).
+
+### Summarize tab
+![Summary: verdict, changes since the previous test and prioritized fixes](docs/screenshots/summary.png)
+
+One card per device that gathers the whole test, so you do not have to look in several places:
+
+- **Verdict:** a one-line diagnosis ("The main content appears late"), the score, and the four Core Web Vitals with their rating and goal.
+- **Since the previous test:** which metrics got worse or better, with a reminder that single-run results can swing.
+- **What to fix, in priority order:** each suggestion has the evidence from this test, a concrete **How to fix** tip and **Where to look** (the files or the LCP element). Metrics outside their goal come first, then Lighthouse opportunities by estimated time saved. Image and JavaScript findings are merged so nothing is listed twice; the first six are shown and the rest expand on demand.
+- **What is working:** the metrics and checks that are already fine.
+
+Tests saved before the diagnosis existed still get a summary, built from the data they have.
+
 ### Headline metrics
 Performance score (0–100) and the main Lighthouse metrics: **LCP, FCP, TBT, CLS**, page weight and number of requests. Values are colored green / yellow / red using Google's thresholds, and each one shows the change since the previous test of the same URL, page type and device.
 
@@ -67,7 +81,7 @@ Collapsible sections with a one-line summary, sortable columns and a button to c
 
 Thresholds and page types live in [`lib/config.ts`](lib/config.ts):
 
-- `THRESHOLDS`: what counts as an oversized image or script.
+- `THRESHOLDS`: what counts as an oversized image or script, a slow API call (`slowApiMs`) or a heavy page (`pageBytes`). The last two only drive the Summarize tab.
 - `RATINGS`: the good / poor limits used for colors.
 - `LCP_PHASES` and `OPPORTUNITIES`: the tips shown in the diagnosis. Edit them to match your stack.
 - `PAGE_TYPES`: the page types offered in the form.
@@ -76,11 +90,12 @@ Thresholds and page types live in [`lib/config.ts`](lib/config.ts):
 
 ```
 app/page.jsx            main page: form, queue progress, results, history
-app/components/         TestForm, Results, History, ScoreChip
+app/components/         TestForm, Results, Summary, History, ScoreChip
 app/api/test            POST: queue a test · GET/DELETE /api/test/[id]: status / cancel
 app/api/report          POST: build the PDF report
 lib/lighthouse.ts       runs Lighthouse in headless Chrome
 lib/analyze.ts          turns the Lighthouse report into metrics, diagnosis and findings (pure function)
+lib/summarize.ts        builds the Summarize tab: verdict, prioritized fixes and what works (pure function)
 lib/queue.ts            in-memory queue: one test at a time, ETA and cancellation
 lib/storage.ts          history in localStorage (client side)
 lib/compare.ts          better / worse rules against the previous test

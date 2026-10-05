@@ -115,3 +115,40 @@ export interface Job {
   results: { device: Device; runs: number; result: TestResult }[];
   createdAt: number;
 }
+
+export type Priority = 'high' | 'medium' | 'low';
+
+export interface SummaryVital {
+  key: 'lcp' | 'fcp' | 'tbt' | 'cls';
+  label: string;
+  value: string;
+  target: string;
+  rating: Rating;
+}
+
+export interface SummaryAction {
+  id: string;
+  title: string;
+  /** Evidencia de esta prueba (números concretos). */
+  why: string;
+  /** Qué hacer para arreglarlo. */
+  tip: string;
+  priority: Priority;
+  savingsMs?: number;
+  metric?: string;
+  savingsBytes?: number;
+  /** Dónde mirar: archivos o elementos concretos. */
+  where: { text: string; href?: string; detail?: string }[];
+}
+
+/** Resumen de una prueba: veredicto, qué arreglar (priorizado) y qué va bien. */
+export interface Summary {
+  rating: Rating;
+  headline: string;
+  detail: string;
+  vitals: SummaryVital[];
+  caveats: string[];
+  changes: { since: string; worse: string[]; better: string[]; singleRun: boolean } | null;
+  actions: SummaryAction[];
+  working: string[];
+}

@@ -17,6 +17,8 @@ export const DEVICES: { id: Device; label: string }[] = [
 export const THRESHOLDS = {
   imageBytes: 200 * 1024,
   scriptBytes: 150 * 1024,
+  slowApiMs: 1000, // una petición API más lenta que esto se sugiere optimizar en el resumen
+  pageBytes: 3 * 1024 * 1024, // peso total a partir del cual el resumen sugiere aligerar la página
 };
 
 // Umbrales de Google (Core Web Vitals / Lighthouse).
