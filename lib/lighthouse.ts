@@ -2,9 +2,10 @@ import lighthouse from 'lighthouse';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import * as chromeLauncher from 'chrome-launcher';
 import { extract } from './analyze.ts';
-import type { Device, TestResult } from './types.ts';
+import type { Device, Lhr, TestResult } from './types.ts';
 
 const RUN_TIMEOUT_MS = 3 * 60 * 1000;
+const MAX_WAIT_FOR_LOAD_MS = 45_000;
 
 /**
  * Ejecuta Lighthouse una vez (mobile o desktop) y devuelve el resultado normalizado.
@@ -18,7 +19,7 @@ export async function runLighthouse(url: string, device: Device, signal?: AbortS
       chromePath: process.env.CHROME_PATH || undefined,
       chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],
     });
-  } catch (e) {
+  } catch {
     throw new Error('Could not start Chrome. Install Google Chrome or Chromium, or set the CHROME_PATH environment variable to its executable.');
   }
 
@@ -30,7 +31,7 @@ export async function runLighthouse(url: string, device: Device, signal?: AbortS
       output: 'json' as const,
       logLevel: 'error' as const,
       onlyCategories: ['performance'],
-      maxWaitForLoad: 45000,
+      maxWaitForLoad: MAX_WAIT_FOR_LOAD_MS,
     };
     const config = device === 'desktop' ? desktopConfig : undefined; // móvil = valores por defecto de Lighthouse
 
@@ -39,16 +40,17 @@ export async function runLighthouse(url: string, device: Device, signal?: AbortS
     });
     // Al cancelar se cierra Chrome y se rechaza de inmediato (Lighthouse falla por su cuenta después).
     const aborted = new Promise<never>((_, reject) => {
-      onAbort = () => { try { chrome.kill(); } catch { /* ignore */ } reject(signal!.reason); };
+      onAbort = () => { try { chrome.kill(); } catch { /* Chrome ya estaba cerrado */ } reject(signal?.reason); };
       if (signal?.aborted) onAbort();
       else signal?.addEventListener('abort', onAbort, { once: true });
     });
     const result = await Promise.race([lighthouse(url, flags, config), timeout, aborted]);
     if (!result?.lhr) throw new Error('Lighthouse returned no report.');
-    return extract(result.lhr, url);
+    // El informe es JSON externo: Lhr describe solo lo que la app lee, y analyze.ts valida cada campo al leerlo.
+    return extract(result.lhr as unknown as Lhr, url);
   } finally {
     clearTimeout(timer);
     if (onAbort) signal?.removeEventListener('abort', onAbort);
-    try { await chrome.kill(); } catch { /* ignore */ }
+    try { await chrome.kill(); } catch { /* Chrome ya estaba cerrado */ }
   }
 }

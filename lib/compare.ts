@@ -1,4 +1,4 @@
-import type { Comparison, Delta, MetricKey, TestResult } from './types.ts';
+import type { Comparison, Delta, MetricKey } from './types.ts';
 
 // Dirección "mejor" y tolerancia para considerar que una métrica no cambió.
 const RULES: Record<MetricKey, { better: 'higher' | 'lower'; tol: (p: number) => number }> = {
@@ -11,9 +11,9 @@ const RULES: Record<MetricKey, { better: 'higher' | 'lower'; tol: (p: number) =>
   requestCount: { better: 'lower', tol: () => 0 },
 };
 
-/** Compara el resultado actual contra el anterior. Devuelve null si no hay anterior. */
 type Comparable = Partial<Record<MetricKey, number | null>> & { id?: number; createdAt?: string };
 
+/** Compara el resultado actual contra el anterior. Devuelve null si no hay anterior. */
 export function compare(current: Comparable, previous: (Comparable & { id: number; createdAt: string }) | null): Comparison | null {
   if (!previous) return null;
   const deltas: Comparison['deltas'] = {};

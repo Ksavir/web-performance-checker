@@ -8,21 +8,39 @@ export const PAGE_TYPES: { id: PageType; label: string }[] = [
   { id: 'login', label: 'Login' },
 ];
 
-export const DEVICES: { id: Device; label: string }[] = [
-  { id: 'mobile', label: 'Mobile' },
-  { id: 'desktop', label: 'Desktop' },
+const KB = 1024;
+const MB = 1024 * KB;
+
+/** Dispositivos en el orden en que se prueban y se muestran (mobile primero). */
+export const DEVICES: { id: Device; label: string; short: string }[] = [
+  { id: 'mobile', label: 'Mobile', short: 'M' },
+  { id: 'desktop', label: 'Desktop', short: 'D' },
 ];
+
+export const getDeviceLabel = (device: Device): string => DEVICES.find((entry) => entry.id === device)?.label ?? device;
 
 // Umbrales de "sobredimensionado" (propuestos; confirmar con el equipo).
 export const THRESHOLDS = {
-  imageBytes: 200 * 1024,
-  scriptBytes: 150 * 1024,
+  imageBytes: 200 * KB,
+  scriptBytes: 150 * KB,
   slowApiMs: 1000, // una petición API más lenta que esto se sugiere optimizar en el resumen
-  pageBytes: 3 * 1024 * 1024, // peso total a partir del cual el resumen sugiere aligerar la página
+  verySlowApiMs: 3000, // ...y desde aquí, con prioridad alta
+  pageBytes: 3 * MB, // peso total a partir del cual el resumen sugiere aligerar la página
+  veryHeavyPageBytes: 6 * MB, // ...y desde aquí, con prioridad alta
+};
+
+// Prioridad de una sugerencia del resumen según lo que Lighthouse estima ahorrar.
+export const PRIORITY_THRESHOLDS = {
+  highMs: 300,
+  highBytes: 500 * KB,
+  mediumMs: 100,
+  mediumBytes: 100 * KB,
+  /** Imágenes o scripts pesados que suman más que esto merecen al menos prioridad media. */
+  heavyGroupBytes: 1 * MB,
 };
 
 // Umbrales de Google (Core Web Vitals / Lighthouse).
-export const RATINGS: Record<string, { good: number; poor: number; higherIsBetter?: boolean }> = {
+export const RATINGS: Record<'score' | 'lcp' | 'fcp' | 'tbt' | 'cls', { good: number; poor: number; higherIsBetter?: boolean }> = {
   score: { good: 90, poor: 50, higherIsBetter: true },
   lcp: { good: 2500, poor: 4000 },
   fcp: { good: 1800, poor: 3000 },
@@ -32,10 +50,10 @@ export const RATINGS: Record<string, { good: number; poor: number; higherIsBette
 
 /** Devuelve 'good' | 'ok' | 'poor' | 'none' */
 export function rate(metric: string, value: number | null | undefined): Rating {
-  const r = RATINGS[metric];
-  if (!r || value == null) return 'none';
-  if (r.higherIsBetter) return value >= r.good ? 'good' : value >= r.poor ? 'ok' : 'poor';
-  return value <= r.good ? 'good' : value <= r.poor ? 'ok' : 'poor';
+  const limits = RATINGS[metric as keyof typeof RATINGS];
+  if (!limits || value == null) return 'none';
+  if (limits.higherIsBetter) return value >= limits.good ? 'good' : value >= limits.poor ? 'ok' : 'poor';
+  return value <= limits.good ? 'good' : value <= limits.poor ? 'ok' : 'poor';
 }
 
 export const METRICS: { key: 'lcp' | 'fcp' | 'tbt' | 'cls' | 'pageSize' | 'requestCount'; label: string; short: string; fmt: ValueFormat }[] = [
@@ -110,24 +128,3 @@ export const OPPORTUNITIES: Record<string, { title: string; tip: string }> = {
     tip: 'Some origins still use HTTP/1.1. Serve them over HTTP/2+ so requests are multiplexed.',
   },
 };
-
-export function formatValue(fmt: ValueFormat, v: number | null | undefined): string {
-  if (v == null) return '–';
-  switch (fmt) {
-    case 'ms':
-      return v >= 1000 ? `${(v / 1000).toFixed(2)} s` : `${Math.round(v)} ms`;
-    case 'cls':
-      return v.toFixed(3);
-    case 'bytes':
-      return formatBytes(v);
-    default:
-      return String(Math.round(v));
-  }
-}
-
-export function formatBytes(b: number | null | undefined): string {
-  if (b == null) return '–';
-  if (b >= 1024 * 1024) return `${(b / 1024 / 1024).toFixed(2)} MB`;
-  if (b >= 1024) return `${Math.round(b / 1024)} KB`;
-  return `${b} B`;
-}

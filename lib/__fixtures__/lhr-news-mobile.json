@@ -1,0 +1,1946 @@
+{
+ "lighthouseVersion": "13.5.0",
+ "requestedUrl": "https://www.theguardian.com/international",
+ "finalDisplayedUrl": "https://www.theguardian.com/international",
+ "runWarnings": [],
+ "categories": {
+  "performance": {
+   "score": 0.74
+  }
+ },
+ "audits": {
+  "network-requests": {
+   "score": 1,
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://www.theguardian.com/international",
+      "resourceType": "Document",
+      "mimeType": "text/html",
+      "statusCode": 200,
+      "networkRequestTime": 0.30200000014156103,
+      "networkEndTime": 446.0190000003204,
+      "transferSize": 161532,
+      "resourceSize": 1470049
+     },
+     {
+      "url": "https://assets.guim.co.uk/polyfill.io/v3/polyfill.min.js?rum=0&features=es6%2Ces7%2Ces2017%2Ces2018%2Ces2019%2Cdefault-3.6%2CHTMLPictureElement%2CIntersectionObserver%2CIntersectionObserverEntry%2CURLSearchParams%2Cfetch%2CNodeList.prototype.forEach%2Cnavigator.sendBeacon%2Cperformance.now%2CPromise.allSettled&flags=gated&callback=guardianPolyfilled&unknown=polyfill&cacheClear=1",
+      "resourceType": "Other",
+      "mimeType": "text/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 360.84800000023097,
+      "networkEndTime": 506.52699999976903,
+      "transferSize": 799,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/frameworks.client.web.093d5d2540c0a85860f3.js",
+      "resourceType": "Other",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 361.4410000005737,
+      "networkEndTime": 486.0990000003949,
+      "transferSize": 20459,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js",
+      "resourceType": "Other",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 484.7630000002682,
+      "networkEndTime": 745.0140000004321,
+      "transferSize": 0,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://assets.guim.co.uk/commercial/7e57fde41df1f5f80b9f/graun.standalone.commercial.js",
+      "resourceType": "Other",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 484.7949999999255,
+      "networkEndTime": 522.9910000003874,
+      "transferSize": 0,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Bold.woff2",
+      "resourceType": "Font",
+      "mimeType": "font/woff2",
+      "statusCode": 200,
+      "networkRequestTime": 359.2170000001788,
+      "networkEndTime": 727.3500000005588,
+      "transferSize": 17455,
+      "resourceSize": 16492
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Regular.woff2",
+      "resourceType": "Font",
+      "mimeType": "font/woff2",
+      "statusCode": 200,
+      "networkRequestTime": 359.3650000002235,
+      "networkEndTime": 728.9160000002012,
+      "transferSize": 17139,
+      "resourceSize": 16792
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/manifest.json",
+      "resourceType": "Manifest",
+      "mimeType": "application/json",
+      "statusCode": 200,
+      "networkRequestTime": 360.7520000003278,
+      "networkEndTime": 730.4640000006184,
+      "transferSize": 806,
+      "resourceSize": 1100
+     },
+     {
+      "url": "https://assets.guim.co.uk/polyfill.io/v3/polyfill.min.js?rum=0&features=es6%2Ces7%2Ces2017%2Ces2018%2Ces2019%2Cdefault-3.6%2CHTMLPictureElement%2CIntersectionObserver%2CIntersectionObserverEntry%2CURLSearchParams%2Cfetch%2CNodeList.prototype.forEach%2Cnavigator.sendBeacon%2Cperformance.now%2CPromise.allSettled&flags=gated&callback=guardianPolyfilled&unknown=polyfill&cacheClear=1",
+      "resourceType": "Script",
+      "mimeType": "text/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 484.3980000000447,
+      "networkEndTime": 506.6780000003055,
+      "transferSize": 0,
+      "resourceSize": 168
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/frameworks.client.web.093d5d2540c0a85860f3.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 364.1470000008121,
+      "networkEndTime": 486.76999999955297,
+      "transferSize": 0,
+      "resourceSize": 53663
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 364.20700000040233,
+      "networkEndTime": 744.8950000004843,
+      "transferSize": 49861,
+      "resourceSize": 181038
+     },
+     {
+      "url": "https://assets.guim.co.uk/commercial/7e57fde41df1f5f80b9f/graun.standalone.commercial.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 484.4199999999255,
+      "networkEndTime": 522.8969999998808,
+      "transferSize": 15916,
+      "resourceSize": 44586
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/css/print.css",
+      "resourceType": "Stylesheet",
+      "mimeType": "text/css",
+      "statusCode": 200,
+      "networkRequestTime": 484.77500000037253,
+      "networkEndTime": 520.2000000001863,
+      "transferSize": 591,
+      "resourceSize": 75
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/f00be41a95a14ffc561a260eddf29c4643941cf6/840_0_2624_2624/master/2624.jpg?width=98&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 426.5219999998808,
+      "networkEndTime": 484.31100000068545,
+      "transferSize": 4613,
+      "resourceSize": 4233
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2017/10/06/Gaby-Hinsliff,-L.png?width=98&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 426.6140000000596,
+      "networkEndTime": 483.1610000003129,
+      "transferSize": 5221,
+      "resourceSize": 4758
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/bdc55db88a6166a561f4c7bc3690722aa32c02c1/683_0_6571_5257/master/6571.jpg?width=98&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 426.7220000009984,
+      "networkEndTime": 486.3030000003055,
+      "transferSize": 3670,
+      "resourceSize": 3300
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2022/12/05/Marina_Hyde.png?width=98&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 426.76500000059605,
+      "networkEndTime": 485.92599999997765,
+      "transferSize": 4656,
+      "resourceSize": 4243
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/853be8f6f03c8af6cbedd6dfcd849e41f603fbe2/258_0_7740_6192/master/7740.jpg?width=98&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 426.81100000068545,
+      "networkEndTime": 485.9989999998361,
+      "transferSize": 4091,
+      "resourceSize": 3664
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/07a7fdf5a679e1e6d7aff52f8bae4f175f98be98/507_0_1854_1484/master/1854.jpg?width=98&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 426.8519999999553,
+      "networkEndTime": 486.35699999984354,
+      "transferSize": 3579,
+      "resourceSize": 3192
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/a7c16e03b529e84f8889588bf438839554d4d3b2/0_0_5906_4724/master/5906.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 483.2250000005588,
+      "networkEndTime": 519.6340000005439,
+      "transferSize": 35224,
+      "resourceSize": 34623
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/32cecd4632615ae888b3dbf65938ff640a20fdcc/524_301_1664_1331/master/1664.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 484.7309999996796,
+      "networkEndTime": 524.0140000004321,
+      "transferSize": 34395,
+      "resourceSize": 33846
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/e3a6f99e131d3eddbe3428727df0fb1bb43c3adc/637_513_1679_1343/master/1679.jpg?width=120&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 486.41600000020117,
+      "networkEndTime": 524.9020000007004,
+      "transferSize": 5213,
+      "resourceSize": 4812
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/9ed434d22058716def8af7771444b267d4c83f55/397_0_3970_3176/master/3970.jpg?width=120&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 486.4639999996871,
+      "networkEndTime": 524.0690000001341,
+      "transferSize": 4256,
+      "resourceSize": 3908
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/a2d5b1b43484a9a803b21640e2421145e6f52b3b/265_0_3120_2496/master/3120.jpg?width=120&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 486.554999999702,
+      "networkEndTime": 525.276999999769,
+      "transferSize": 4813,
+      "resourceSize": 4468
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/3f47f9c957bf9baf75914d7ae86b68b97f758dd0/828_0_6170_4936/master/6170.jpg?width=120&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 486.58200000040233,
+      "networkEndTime": 525.39100000076,
+      "transferSize": 4656,
+      "resourceSize": 4262
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/2e89118af52b3cb69ac182bcba8ae2ba78f48710/0_23_1536_1228/master/1536.jpg?width=120&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 519.6820000009611,
+      "networkEndTime": 555.3289999999106,
+      "transferSize": 5902,
+      "resourceSize": 5543
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/2e05ef0996ad329f4722da589aa6914a017e665d/801_256_1316_1053/master/1316.jpg?width=120&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 524.098000000231,
+      "networkEndTime": 559.1710000000894,
+      "transferSize": 5189,
+      "resourceSize": 4861
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2026/10/01/Bear_eats_pastries_at_the_Aspen_farmers_market_-_loop--fc9cea60-9ca8-46fc-a454-f191a2818a75-1.0.0000000.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 524.1390000004321,
+      "networkEndTime": 560.5020000003278,
+      "transferSize": 23309,
+      "resourceSize": 22936
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2017/10/06/Gaby-Hinsliff,-L.png?width=150&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 524.9359999997541,
+      "networkEndTime": 558.6720000002533,
+      "transferSize": 8725,
+      "resourceSize": 8448
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2026/07/15/Diana_Berg.png?width=80&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 525.4199999999255,
+      "networkEndTime": 561.4200000008568,
+      "transferSize": 3850,
+      "resourceSize": 3532
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2025/02/19/Kenneth_Roth.png?width=80&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 525.4639999996871,
+      "networkEndTime": 561.1970000006258,
+      "transferSize": 3293,
+      "resourceSize": 3014
+     },
+     {
+      "url": "https://i.guim.co.uk/img/uploads/2025/06/18/Austin_Sarat.png?width=80&dpr=2&s=none&crop=1%3A1",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 555.3840000005439,
+      "networkEndTime": 589.6340000005439,
+      "transferSize": 3178,
+      "resourceSize": 2858
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/fonts/guardian-textsans/noalts-not-hinted/GuardianTextSans-Regular.woff2",
+      "resourceType": "Font",
+      "mimeType": "font/woff2",
+      "statusCode": 200,
+      "networkRequestTime": 566.8799999998882,
+      "networkEndTime": 903.703000000678,
+      "transferSize": 16105,
+      "resourceSize": 15416
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/fonts/guardian-textsans/noalts-not-hinted/GuardianTextSans-Bold.woff2",
+      "resourceType": "Font",
+      "mimeType": "font/woff2",
+      "statusCode": 200,
+      "networkRequestTime": 567.4170000003651,
+      "networkEndTime": 908.5440000006929,
+      "transferSize": 18063,
+      "resourceSize": 17376
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Medium.woff2",
+      "resourceType": "Font",
+      "mimeType": "font/woff2",
+      "statusCode": 200,
+      "networkRequestTime": 567.4939999999478,
+      "networkEndTime": 908.6140000000596,
+      "transferSize": 17175,
+      "resourceSize": 16612
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/7a8377a8239c58331e80d9ae5164c51f212291f1/0_248_1952_1561/master/1952.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "resourceType": "Image",
+      "mimeType": "image/avif",
+      "statusCode": 200,
+      "networkRequestTime": 566.75800000038,
+      "networkEndTime": 604.4590000007302,
+      "transferSize": 30896,
+      "resourceSize": 30509
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/9460.client.web.fbdb245a82b42cc254f3.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 750.230000000447,
+      "networkEndTime": 784.105000000447,
+      "transferSize": 988,
+      "resourceSize": 810
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/5280.client.web.87a372859dc83706ae42.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 750.4350000005215,
+      "networkEndTime": 785.1260000001639,
+      "transferSize": 965,
+      "resourceSize": 815
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/3933.client.web.6bd635d4a89b902d1c41.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 750.51600000076,
+      "networkEndTime": 785.3180000009015,
+      "transferSize": 895,
+      "resourceSize": 1026
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/785.client.web.9b5b57b00a967fe202ee.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 750.6440000003204,
+      "networkEndTime": 785.2000000011176,
+      "transferSize": 740,
+      "resourceSize": 622
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/Metrics-island.client.web.e3bbf90d4f70a5df98a7.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 758.9790000002831,
+      "networkEndTime": 795.5250000003725,
+      "transferSize": 4475,
+      "resourceSize": 13154
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/SetABTests-island.client.web.868fc0a5d63af84daa73.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.0890000006184,
+      "networkEndTime": 795.6619999995455,
+      "transferSize": 2826,
+      "resourceSize": 9207
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/SetAdTargeting-island.client.web.8eda8e88cd6dabe51058.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.2400000002235,
+      "networkEndTime": 795.7950000008568,
+      "transferSize": 979,
+      "resourceSize": 705
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/2715.client.web.d7b9dd200d8cd31f790f.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.4560000002384,
+      "networkEndTime": 795.9290000004694,
+      "transferSize": 6695,
+      "resourceSize": 20606
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/4356.client.web.c9580284ae2b0a6774ff.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.5460000010207,
+      "networkEndTime": 796.0920000001788,
+      "transferSize": 8372,
+      "resourceSize": 23926
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/6346.client.web.c6f64eaf7d5eef6ada29.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.6840000003576,
+      "networkEndTime": 798.4939999999478,
+      "transferSize": 4025,
+      "resourceSize": 9782
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/7762.client.web.96675f4a5057d54371f0.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.7570000002161,
+      "networkEndTime": 798.5860000001267,
+      "transferSize": 3008,
+      "resourceSize": 6778
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/TopBar-island.client.web.9fc1ff0205cea70bcf16.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 759.8410000000149,
+      "networkEndTime": 798.6770000001416,
+      "transferSize": 4071,
+      "resourceSize": 10955
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/9304.client.web.934ac8bd3fc5263352fc.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 760.1109999995679,
+      "networkEndTime": 798.8030000003055,
+      "transferSize": 3619,
+      "resourceSize": 11827
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/631.client.web.b6ff1505a6f35b2e659c.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 760.2240000003949,
+      "networkEndTime": 797.0650000004098,
+      "transferSize": 7634,
+      "resourceSize": 25037
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/Titlepiece-island.client.web.a62eea779ee49d1a5004.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 760.3310000002384,
+      "networkEndTime": 797.2410000003874,
+      "transferSize": 12015,
+      "resourceSize": 46394
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/1?v=17&platform=next-gen&url=https%3A%2F%2Fwww.theguardian.com%2Finternational&ref=&visibilityState=visible&tz=-120&navigationType=navigate&contentType=network%20front&viewId=muqw0cov9njhmz14y8wd",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 762.0750000001863,
+      "networkEndTime": 945.1710000000894,
+      "transferSize": 483,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&edition=Europe",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 762.4500000001863,
+      "networkEndTime": 944.9170000003651,
+      "transferSize": 215,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&experiences=dotcom-rendering",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 762.6620000004768,
+      "networkEndTime": 945.4470000006258,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/wrapperMessagingWithoutDetection.js",
+      "resourceType": "Script",
+      "mimeType": "text/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 765.4830000009388,
+      "networkEndTime": 806.4640000006184,
+      "transferSize": 44725,
+      "resourceSize": 143862
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&inPrivateBrowsingMode=false",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 810.7800000002608,
+      "networkEndTime": 945.3379999995232,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/4.40.3/gdpr-tcf.205218eeda1bb062edfc.bundle.js",
+      "resourceType": "Script",
+      "mimeType": "text/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 816.5769999995828,
+      "networkEndTime": 854.3339999997988,
+      "transferSize": 30943,
+      "resourceSize": 164342
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/wrapper/v2/meta-data?hasCsp=true&accountId=1257&env=prod&metadata=%7B%22gdpr%22%3A%7B%7D%7D&propertyId=7417&scriptVersion=4.40.3&scriptType=unified",
+      "resourceType": "XHR",
+      "mimeType": "application/json",
+      "statusCode": 200,
+      "networkRequestTime": 816.9960000002757,
+      "networkEndTime": 1025.0540000004694,
+      "transferSize": 803,
+      "resourceSize": 253
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/984.client.web.7a909c806c27e3cc5418.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.2480000006035,
+      "networkEndTime": 867.4220000002533,
+      "transferSize": 46602,
+      "resourceSize": 399131
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/3156.client.web.47cfca84beaa17f93041.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.3580000000075,
+      "networkEndTime": 864.8789999997243,
+      "transferSize": 3553,
+      "resourceSize": 10044
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/1195.client.web.0c80d1b3ff2306aee514.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.5099999997765,
+      "networkEndTime": 864.9980000006035,
+      "transferSize": 4823,
+      "resourceSize": 16307
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/9700.client.web.ff18f814ebd815c4a885.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.597000000067,
+      "networkEndTime": 865.0879999995232,
+      "transferSize": 4093,
+      "resourceSize": 11150
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/26.client.web.0fa8841b949637650b42.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.6660000002012,
+      "networkEndTime": 867.9259999999776,
+      "transferSize": 2584,
+      "resourceSize": 8348
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/4652.client.web.22df4dbb7f2dc1a7f3eb.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.7330000000075,
+      "networkEndTime": 868.0690000001341,
+      "transferSize": 3057,
+      "resourceSize": 10587
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/1252.client.web.b30415ea3c4413e34667.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.8070000000298,
+      "networkEndTime": 868.2950000008568,
+      "transferSize": 13328,
+      "resourceSize": 128515
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/2755.client.web.f7da1aa74320ef68a438.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.8750000009313,
+      "networkEndTime": 870.0309999994934,
+      "transferSize": 4274,
+      "resourceSize": 11807
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/8568.client.web.b9c4d9c0a6d96a4cd98f.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 828.9720000009984,
+      "networkEndTime": 870.1560000004247,
+      "transferSize": 8423,
+      "resourceSize": 26042
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/ScrollableHighlights-island.client.web.c61a41fc5fd27826b7a9.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 829.0810000002384,
+      "networkEndTime": 870.8179999999702,
+      "transferSize": 8805,
+      "resourceSize": 29114
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/9173.client.web.e89e6058d13aa44758f1.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 829.2790000000969,
+      "networkEndTime": 870.9500000001863,
+      "transferSize": 6541,
+      "resourceSize": 21678
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/RelativeTime-island.client.web.8479e70b5a6c3b6d43a6.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 829.4460000004619,
+      "networkEndTime": 871.0389999998733,
+      "transferSize": 2802,
+      "resourceSize": 6010
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/AlreadyVisited-island.client.web.e43f38aec9a97dcdf50a.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 829.86699999962,
+      "networkEndTime": 871.9320000000298,
+      "transferSize": 858,
+      "resourceSize": 646
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/AdmiralScript-island.client.web.ac97dc9e85303f7471d3.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.0690000001341,
+      "networkEndTime": 871.9950000001118,
+      "transferSize": 2147,
+      "resourceSize": 4373
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/FocusStyles-island.client.web.a84772516b53b3d34e14.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.2060000002384,
+      "networkEndTime": 872.1349999997765,
+      "transferSize": 906,
+      "resourceSize": 1269
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/ShowHideContainers-island.client.web.44f132020bec6af81feb.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.3530000001192,
+      "networkEndTime": 872.4990000007674,
+      "transferSize": 1108,
+      "resourceSize": 1733
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/BrazeMessaging-island.client.web.3cca739e3c5dda4097be.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.5130000002682,
+      "networkEndTime": 872.8380000004545,
+      "transferSize": 807,
+      "resourceSize": 510
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/ReaderRevenueDev-island.client.web.5caf580065dea2b0908a.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.6720000002533,
+      "networkEndTime": 871.0949999997392,
+      "transferSize": 818,
+      "resourceSize": 752
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/GoogleOneTap-island.client.web.b6008b3132017594db2d.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.8430000003427,
+      "networkEndTime": 871.1690000006929,
+      "transferSize": 2497,
+      "resourceSize": 4538
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/EditionSwitcherBanner-island.client.web.3b2d937c9d185d647315.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 830.9979999996722,
+      "networkEndTime": 873.6360000008717,
+      "transferSize": 4473,
+      "resourceSize": 11331
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/4796.client.web.5809e5f1449a3a8a27d5.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 831.1580000007525,
+      "networkEndTime": 875.6969999996945,
+      "transferSize": 26751,
+      "resourceSize": 97901
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/3773.client.web.c0504167738a19813f31.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 831.2529999995604,
+      "networkEndTime": 873.0420000003651,
+      "transferSize": 11717,
+      "resourceSize": 39700
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/StickyBottomBanner-island.client.web.e549f38ee74ac39bec91.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 831.3810000000522,
+      "networkEndTime": 873.1560000004247,
+      "transferSize": 6783,
+      "resourceSize": 20510
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/4501.client.web.07aba6a59a47d3c67d87.js",
+      "resourceType": "Script",
+      "mimeType": "application/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 837,
+      "networkEndTime": 875.6530000008643,
+      "transferSize": 4453,
+      "resourceSize": 12450
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&abTestRegister=%7B%22growth-auxia-banner%22%3A%7B%22variantName%22%3A%22variant%22%2C%22complete%22%3Afalse%7D%2C%22fronts-and-curation-editorial-test%22%3A%7B%22variantName%22%3A%22b%22%2C%22complete%22%3Afalse%7D%7D",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 837.3050000006333,
+      "networkEndTime": 945.2320000007749,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&attentionMs=0",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 862.8859999999404,
+      "networkEndTime": 945.2080000005662,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&performance=%7B%22dns%22%3A89%2C%22connection%22%3A194%2C%22firstByte%22%3A70%2C%22lastByte%22%3A93%2C%22domContentLoadedEvent%22%3A321%2C%22loadEvent%22%3A142%2C%22navType%22%3A0%2C%22redirectCount%22%3A0%7D&renderedComponents=%5B%22header%22%2C%22topbar%22%2C%22highlights%22%2C%22sub-nav%22%2C%22edition-switcher-banner%22%2C%22news%22%2C%22gu-video-loop%22%2C%22in-focus%22%2C%22features%22%2C%22more-features%22%2C%22opinion%22%2C%22more-opinion%22%2C%22editorials%22%2C%22cartoon%22%2C%22sport%22%2C%22more-sport%22%2C%22more-top-stories%22%2C%22climate-crisis-%26-environment%22%2C%22uk-news%22%2C%22world-news%22%2C%22secure-messaging%22%2C%22culture%22%2C%22what-to-watch%22%2C%22what-to-listen-to%22%2C%22what-to-read%22%2C%22what-to-play%22%2C%22more-culture%22%2C%22lifestyle%22%2C%22food%22%2C%22fashion-%26-beauty%22%2C%22relationships%22%2C%22health-%26-fitness%22%2C%22more-lifestyle%22%2C%22documentary%22%2C%22you-may-have-missed%22%2C%22take-part%22%2C%22newsletters%22%2C%22in-pictures%22%2C%22most-popular%22%2C%22trending-topics%22%2C%22footer%22%5D",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 910.0200000004843,
+      "networkEndTime": 960.9300000006333,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&performance=%7B%22dns%22%3A89%2C%22connection%22%3A194%2C%22firstByte%22%3A70%2C%22lastByte%22%3A93%2C%22domContentLoadedEvent%22%3A321%2C%22loadEvent%22%3A142%2C%22navType%22%3A0%2C%22redirectCount%22%3A0%7D",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 916.2000000001863,
+      "networkEndTime": 967.3660000003874,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://static.guim.co.uk/images/favicon-32x32.ico",
+      "resourceType": "Other",
+      "mimeType": "image/x-icon",
+      "statusCode": 200,
+      "networkRequestTime": 917.2940000006929,
+      "networkEndTime": 1041.3909999998286,
+      "transferSize": 811,
+      "resourceSize": 4286
+     },
+     {
+      "url": "https://assets.guim.co.uk/static/frontend/icons/homescreen/roundel.svg",
+      "resourceType": "Other",
+      "mimeType": "image/svg+xml",
+      "statusCode": 200,
+      "networkRequestTime": 917.5719999996945,
+      "networkEndTime": 951.8339999997988,
+      "transferSize": 762,
+      "resourceSize": 437
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/wrapper/v2/messages?hasCsp=true&env=prod&body=%7B%22accountId%22%3A1257%2C%22campaignEnv%22%3A%22prod%22%2C%22campaigns%22%3A%7B%22gdpr%22%3A%7B%22consentStatus%22%3A%7B%7D%2C%22targetingParams%22%3A%7B%22framework%22%3A%22tcfv2%22%2C%22excludePage%22%3Afalse%2C%22isCorP%22%3Atrue%2C%22isUserSignedIn%22%3Afalse%2C%22corPCurrency%22%3A%22EUR%22%7D%7D%7D%2C%22clientMMSOrigin%22%3A%22https%3A%2F%2Fsourcepoint.theguardian.com%22%2C%22hasCSP%22%3Atrue%2C%22includeData%22%3A%7B%22localState%22%3A%7B%22type%22%3A%22string%22%7D%2C%22actions%22%3A%7B%22type%22%3A%22RecordString%22%7D%2C%22cookies%22%3A%7B%22type%22%3A%22RecordString%22%7D%7D%2C%22propertyHref%22%3A%22https%3A%2F%2Fwww.theguardian.com%2Finternational%22%2C%22propertyId%22%3A7417%7D&localState=null&metadata=%7B%22gdpr%22%3A%7B%22applies%22%3Atrue%7D%7D&nonKeyedLocalState=null&ch=528616180528616180fda1&scriptVersion=4.40.3&scriptType=unified",
+      "resourceType": "XHR",
+      "mimeType": "application/json",
+      "statusCode": 200,
+      "networkRequestTime": 1027.0089999996126,
+      "networkEndTime": 1125.3490000003949,
+      "transferSize": 17454,
+      "resourceSize": 113257
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/wrapper/v2/pv-data?hasCsp=true&env=prod&ch=528616180528616180fda1&scriptVersion=4.40.3&scriptType=unified",
+      "resourceType": "Preflight",
+      "mimeType": "text/html",
+      "statusCode": 200,
+      "networkRequestTime": 1129.213999999687,
+      "networkEndTime": 1219.946000000462,
+      "transferSize": 0,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/wrapper/v2/pv-data?hasCsp=true&env=prod&ch=528616180528616180fda1&scriptVersion=4.40.3&scriptType=unified",
+      "resourceType": "XHR",
+      "mimeType": "application/json",
+      "statusCode": 200,
+      "networkRequestTime": 1219.9879999998957,
+      "networkEndTime": 1302.3050000006333,
+      "transferSize": 758,
+      "resourceSize": 194
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&componentEvent=%7B%22component%22%3A%7B%22componentType%22%3A%22CONSENT%22%2C%22id%22%3A%22CONSENT_OR_PAY_BANNER-1482251%22%7D%2C%22action%22%3A%22VIEW%22%7D",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 1135.3449999997392,
+      "networkEndTime": 1188.911000000313,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://ophan.theguardian.com/img/2?viewId=muqw0cov9njhmz14y8wd&adUnitWasHidden=false",
+      "resourceType": "Fetch",
+      "mimeType": "",
+      "statusCode": 204,
+      "networkRequestTime": 1148.0219999998808,
+      "networkEndTime": 1199.2980000004172,
+      "transferSize": 214,
+      "resourceSize": 0
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/index.html?hasCsp=true&message_id=1482251&consentUUID=null&consent_origin=https%3A%2F%2Fsourcepoint.theguardian.com%2Fconsent%2Ftcfv2&preload_message=true&version=v1",
+      "resourceType": "Document",
+      "mimeType": "text/html",
+      "statusCode": 200,
+      "networkRequestTime": 1149.501000000164,
+      "networkEndTime": 1184.9210000000894,
+      "transferSize": 2342,
+      "resourceSize": 5399
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.1c267.css",
+      "resourceType": "Stylesheet",
+      "mimeType": "text/css",
+      "statusCode": 200,
+      "networkRequestTime": 1188.2209999999031,
+      "networkEndTime": 1230.0030000004917,
+      "transferSize": 7018,
+      "resourceSize": 35681
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/polyfills.01516.js",
+      "resourceType": "Script",
+      "mimeType": "text/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 1188.3370000002906,
+      "networkEndTime": 1227.3390000006184,
+      "transferSize": 2475,
+      "resourceSize": 5109
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "resourceType": "Script",
+      "mimeType": "text/javascript",
+      "statusCode": 200,
+      "networkRequestTime": 1188.5810000002384,
+      "networkEndTime": 1262.8980000000447,
+      "transferSize": 94934,
+      "resourceSize": 377387
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/consent/tcfv2/vendor-list/categories?siteId=7417",
+      "resourceType": "Fetch",
+      "mimeType": "application/json",
+      "statusCode": 200,
+      "networkRequestTime": 1290.9680000003427,
+      "networkEndTime": 1326.936999999918,
+      "transferSize": 1148,
+      "resourceSize": 1460
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/consent/tcfv2/vendor-list/categories?siteId=7417&consentLanguage=en",
+      "resourceType": "Fetch",
+      "mimeType": "application/json",
+      "statusCode": 200,
+      "networkRequestTime": 1342.0140000004321,
+      "networkEndTime": 1380.7630000002682,
+      "transferSize": 1150,
+      "resourceSize": 1460
+     },
+     {
+      "url": "https://media.guim.co.uk/8c1c22e152b853e10ff3e1511aa2da58ee04351b/0_0_512_512/512.png",
+      "resourceType": "Image",
+      "mimeType": "image/png",
+      "statusCode": 200,
+      "networkRequestTime": 1350.7340000001714,
+      "networkEndTime": 1475.0200000004843,
+      "transferSize": 23532,
+      "resourceSize": 23214
+     },
+     {
+      "url": "https://media.guim.co.uk/843ea07704db2a72afc0f835b7b2d4beafc189df/0_0_512_512/140.jpg",
+      "resourceType": "Image",
+      "mimeType": "image/jpeg",
+      "statusCode": 200,
+      "networkRequestTime": 1351.0600000005215,
+      "networkEndTime": 1475.4610000001267,
+      "transferSize": 6642,
+      "resourceSize": 6417
+     },
+     {
+      "url": "data:image/svg+xml,%3Csvg%20width%3D%2299%22%20height%3D%2232%22%20viewBox%3D%220%200%2099%2032%22%\u2026",
+      "resourceType": "Image",
+      "mimeType": "image/svg+xml",
+      "statusCode": 200,
+      "networkRequestTime": 1357.341000000015,
+      "networkEndTime": 1357.390000000596,
+      "transferSize": 0,
+      "resourceSize": 5521
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GHGuardianHeadline/GHGuardianHeadline-Bold.woff2",
+      "resourceType": "Font",
+      "mimeType": "binary/octet-stream",
+      "statusCode": 200,
+      "networkRequestTime": 1360.7430000007153,
+      "networkEndTime": 1432.9760000007227,
+      "transferSize": 17096,
+      "resourceSize": 16492
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Regular.woff2",
+      "resourceType": "Font",
+      "mimeType": "application/octet-stream",
+      "statusCode": 200,
+      "networkRequestTime": 1360.917000000365,
+      "networkEndTime": 1409.4040000000969,
+      "transferSize": 35678,
+      "resourceSize": 35452
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Bold.woff2",
+      "resourceType": "Font",
+      "mimeType": "application/octet-stream",
+      "statusCode": 200,
+      "networkRequestTime": 1361.0840000007302,
+      "networkEndTime": 1430.730000000447,
+      "transferSize": 36815,
+      "resourceSize": 36532
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextSansWeb/GuardianTextSansWeb-Regular.woff2",
+      "resourceType": "Font",
+      "mimeType": "application/octet-stream",
+      "statusCode": 200,
+      "networkRequestTime": 1361.161000000313,
+      "networkEndTime": 1404.5169999999925,
+      "transferSize": 36076,
+      "resourceSize": 35868
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextSansWeb/GuardianTextSansWeb-Bold.woff2",
+      "resourceType": "Font",
+      "mimeType": "application/octet-stream",
+      "statusCode": 200,
+      "networkRequestTime": 1361.234999999404,
+      "networkEndTime": 1401.637999999337,
+      "transferSize": 40123,
+      "resourceSize": 39500
+     }
+    ]
+   }
+  },
+  "total-byte-weight": {
+   "score": 1,
+   "numericValue": 1171835,
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://www.theguardian.com/international",
+      "totalBytes": 161532
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "totalBytes": 94934
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js",
+      "totalBytes": 49861
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/984.client.web.7a909c806c27e3cc5418.js",
+      "totalBytes": 46602
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/wrapperMessagingWithoutDetection.js",
+      "totalBytes": 44725
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextSansWeb/GuardianTextSansWeb-Bold.woff2",
+      "totalBytes": 40123
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Bold.woff2",
+      "totalBytes": 36815
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextSansWeb/GuardianTextSansWeb-Regular.woff2",
+      "totalBytes": 36076
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Regular.woff2",
+      "totalBytes": 35678
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/a7c16e03b529e84f8889588bf438839554d4d3b2/0_0_5906_4724/master/5906.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "totalBytes": 35224
+     }
+    ]
+   }
+  },
+  "largest-contentful-paint": {
+   "score": 0.26,
+   "numericValue": 5037.165000000001
+  },
+  "first-contentful-paint": {
+   "score": 0.49,
+   "numericValue": 3025.2919999999995
+  },
+  "total-blocking-time": {
+   "score": 0.99,
+   "numericValue": 73.5
+  },
+  "cumulative-layout-shift": {
+   "score": 1,
+   "numericValue": 0.009008645183948338,
+   "details": {
+    "type": "debugdata",
+    "items": [
+     {}
+    ]
+   }
+  },
+  "lcp-breakdown-insight": {
+   "score": 1,
+   "metricSavings": {
+    "LCP": 0
+   },
+   "details": {
+    "type": "list",
+    "items": [
+     {
+      "type": "table",
+      "items": [
+       {
+        "duration": 354.116,
+        "subpart": "timeToFirstByte",
+        "label": "Time to first byte"
+       },
+       {
+        "duration": 74.027,
+        "subpart": "resourceLoadDelay",
+        "label": "Resource load delay"
+       },
+       {
+        "duration": 91.74,
+        "subpart": "resourceLoadDuration",
+        "label": "Resource load duration"
+       },
+       {
+        "duration": 299.318,
+        "subpart": "elementRenderDelay",
+        "label": "Element render delay"
+       }
+      ]
+     },
+     {
+      "type": "node",
+      "selector": "div.dcr-12rrx4o > div.dcr-14qnufr > picture.dcr-1b8y165 > img.dcr-11wzo8p",
+      "snippet": "<img alt=\"Smit Machchhar and Narendra Modi composite\" src=\"https://i.guim.co.uk/img/media/a7c16e03b529e84f8889588bf438839554d4d3b2/0_\u2026\" loading=\"eager\" data-chromatic=\"ignore\" class=\"dcr-11wzo8p\">",
+      "nodeLabel": "Smit Machchhar and Narendra Modi composite"
+     }
+    ]
+   }
+  },
+  "lcp-discovery-insight": {
+   "score": 0,
+   "metricSavings": {
+    "LCP": 0
+   },
+   "details": {
+    "type": "list",
+    "items": [
+     {
+      "type": "checklist",
+      "items": {
+       "priorityHinted": {
+        "label": "fetchpriority=high should be applied",
+        "value": false
+       },
+       "requestDiscoverable": {
+        "label": "Request is discoverable in initial document",
+        "value": true
+       },
+       "eagerlyLoaded": {
+        "label": "LCP resources should not use loading=lazy",
+        "value": true
+       }
+      }
+     },
+     {
+      "type": "node",
+      "selector": "div.dcr-12rrx4o > div.dcr-14qnufr > picture.dcr-1b8y165 > img.dcr-11wzo8p",
+      "snippet": "<img alt=\"Smit Machchhar and Narendra Modi composite\" src=\"https://i.guim.co.uk/img/media/a7c16e03b529e84f8889588bf438839554d4d3b2/0_\u2026\" loading=\"eager\" data-chromatic=\"ignore\" class=\"dcr-11wzo8p\">",
+      "nodeLabel": "Smit Machchhar and Narendra Modi composite"
+     }
+    ]
+   }
+  },
+  "render-blocking-insight": {
+   "score": 1,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "table",
+    "items": []
+   }
+  },
+  "bootup-time": {
+   "score": 1,
+   "numericValue": 509.61200000000133,
+   "metricSavings": {
+    "TBT": 100
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://www.theguardian.com/international",
+      "total": 321.3399999999999,
+      "scripting": 9.295999999999992,
+      "scriptParseCompile": 3.6640000000000006
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "total": 258.2840000000001,
+      "scripting": 171.98400000000015,
+      "scriptParseCompile": 27.588
+     },
+     {
+      "url": "Unattributable",
+      "total": 207.3479999999984,
+      "scripting": 6.576,
+      "scriptParseCompile": 0
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/wrapperMessagingWithoutDetection.js",
+      "total": 139.8120000000007,
+      "scripting": 106.6560000000007,
+      "scriptParseCompile": 7.704
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js",
+      "total": 132.04800000000063,
+      "scripting": 93.76000000000063,
+      "scriptParseCompile": 0.536
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/frameworks.client.web.093d5d2540c0a85860f3.js",
+      "total": 65.79199999999997,
+      "scripting": 31.251999999999978,
+      "scriptParseCompile": 0.084
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/ScrollableHighlights-island.client.web.c61a41fc5fd27826b7a9.js",
+      "total": 50.59999999999989,
+      "scripting": 49.027999999999885,
+      "scriptParseCompile": 1.484
+     }
+    ]
+   }
+  },
+  "long-tasks": {
+   "score": 1,
+   "metricSavings": {
+    "TBT": 50
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "duration": 111,
+      "startTime": 9162.252000000002
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/wrapperMessagingWithoutDetection.js",
+      "duration": 85,
+      "startTime": 8008.252000000003
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js",
+      "duration": 73,
+      "startTime": 5960.252000000001
+     },
+     {
+      "url": "https://www.theguardian.com/international",
+      "duration": 69,
+      "startTime": 1805.08
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "duration": 52,
+      "startTime": 9058.252000000002
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "duration": 52,
+      "startTime": 9110.252000000002
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/ScrollableHighlights-island.client.web.c61a41fc5fd27826b7a9.js",
+      "duration": 51,
+      "startTime": 8711.777000000002
+     }
+    ]
+   }
+  },
+  "unused-javascript": {
+   "score": 0,
+   "numericValue": 370,
+   "metricSavings": {
+    "FCP": 350,
+    "LCP": 350
+   },
+   "details": {
+    "type": "opportunity",
+    "overallSavingsBytes": 182134,
+    "items": [
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "wastedBytes": 63302,
+      "wastedPercent": 67.0360507174371,
+      "totalBytes": 94429
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js",
+      "wastedBytes": 57789,
+      "wastedPercent": 31.931505486854757,
+      "totalBytes": 180978,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {},
+        {},
+        {},
+        {},
+        {}
+       ]
+      }
+     },
+     {
+      "url": "https://assets.guim.co.uk/assets/984.client.web.7a909c806c27e3cc5418.js",
+      "wastedBytes": 36575,
+      "wastedPercent": 79.33761095981019,
+      "totalBytes": 46100,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {},
+        {},
+        {},
+        {},
+        {}
+       ]
+      }
+     },
+     {
+      "url": "https://assets.guim.co.uk/commercial/7e57fde41df1f5f80b9f/graun.standalone.commercial.js",
+      "wastedBytes": 24468,
+      "wastedPercent": 54.89421847306666,
+      "totalBytes": 44573,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {},
+        {},
+        {},
+        {},
+        {}
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "image-delivery-insight": {
+   "score": 0.5,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://i.guim.co.uk/img/media/a7c16e03b529e84f8889588bf438839554d4d3b2/0_0_5906_4724/master/5906.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "wastedBytes": 28472,
+      "totalBytes": 34623,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "reason": "This image file is larger than it needs to be (930x744) for its displayed dimensions (392x314). Use responsive images to reduce the image download size."
+        }
+       ]
+      }
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/32cecd4632615ae888b3dbf65938ff640a20fdcc/524_301_1664_1331/master/1664.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "wastedBytes": 27833,
+      "totalBytes": 33846,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "reason": "This image file is larger than it needs to be (930x744) for its displayed dimensions (392x314). Use responsive images to reduce the image download size."
+        }
+       ]
+      }
+     },
+     {
+      "url": "https://i.guim.co.uk/img/media/7a8377a8239c58331e80d9ae5164c51f212291f1/0_248_1952_1561/master/1952.jpg?width=465&dpr=2&s=none&crop=5%3A4",
+      "wastedBytes": 25089,
+      "totalBytes": 30509,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "reason": "This image file is larger than it needs to be (930x744) for its displayed dimensions (392x314). Use responsive images to reduce the image download size."
+        }
+       ]
+      }
+     },
+     {
+      "url": "https://media.guim.co.uk/8c1c22e152b853e10ff3e1511aa2da58ee04351b/0_0_512_512/512.png",
+      "wastedBytes": 23163,
+      "totalBytes": 23214,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "reason": "This image file is larger than it needs to be (512x512) for its displayed dimensions (24x24). Use responsive images to reduce the image download size."
+        }
+       ]
+      }
+     },
+     {
+      "url": "https://media.guim.co.uk/843ea07704db2a72afc0f835b7b2d4beafc189df/0_0_512_512/140.jpg",
+      "wastedBytes": 6321,
+      "totalBytes": 6417,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "reason": "This image file is larger than it needs to be (140x140) for its displayed dimensions (24x24). Use responsive images to reduce the image download size."
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "legacy-javascript-insight": {
+   "score": 0,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 150
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/wrapperMessagingWithoutDetection.js",
+      "wastedBytes": 20623,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "signal": "@babel/plugin-transform-classes"
+        },
+        {
+         "signal": "@babel/plugin-transform-spread"
+        },
+        {
+         "signal": "Array.from"
+        },
+        {
+         "signal": "Array.prototype.concat"
+        },
+        {
+         "signal": "Array.prototype.filter"
+        },
+        {
+         "signal": "Array.prototype.includes"
+        },
+        {
+         "signal": "Array.prototype.indexOf"
+        },
+        {
+         "signal": "Array.prototype.join"
+        },
+        {
+         "signal": "Array.prototype.map"
+        },
+        {
+         "signal": "Array.prototype.slice"
+        },
+        {
+         "signal": "Object.assign"
+        },
+        {
+         "signal": "Object.create"
+        },
+        {
+         "signal": "Object.entries"
+        },
+        {
+         "signal": "Object.getOwnPropertyDescriptor"
+        },
+        {
+         "signal": "Object.getOwnPropertyDescriptors"
+        },
+        {
+         "signal": "Object.keys"
+        },
+        {
+         "signal": "Object.values"
+        },
+        {
+         "signal": "Promise.allSettled"
+        },
+        {
+         "signal": "String.prototype.includes"
+        },
+        {
+         "signal": "String.prototype.startsWith"
+        },
+        {
+         "signal": "String.prototype.trim"
+        }
+       ]
+      }
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/4.40.3/gdpr-tcf.205218eeda1bb062edfc.bundle.js",
+      "wastedBytes": 8349,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "signal": "@babel/plugin-transform-classes"
+        },
+        {
+         "signal": "@babel/plugin-transform-regenerator"
+        },
+        {
+         "signal": "@babel/plugin-transform-spread"
+        },
+        {
+         "signal": "Array.prototype.sort"
+        },
+        {
+         "signal": "Object.getPrototypeOf"
+        },
+        {
+         "signal": "Reflect.construct"
+        },
+        {
+         "signal": "Reflect.get"
+        },
+        {
+         "signal": "String.prototype.repeat"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "duplicated-javascript-insight": {
+   "score": 0.5,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "source": "node_modules/@guardian/source",
+      "wastedBytes": 20404,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/631.client.web.b6ff1505a6f35b2e659c.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/3156.client.web.47cfca84beaa17f93041.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/9700.client.web.ff18f814ebd815c4a885.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/9304.client.web.934ac8bd3fc5263352fc.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/3773.client.web.c0504167738a19813f31.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/2715.client.web.d7b9dd200d8cd31f790f.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/EditionSwitcherBanner-island.client.web.3b2d937c9d185d647315.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/26.client.web.0fa8841b949637650b42.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/1195.client.web.0c80d1b3ff2306aee514.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/FocusStyles-island.client.web.a84772516b53b3d34e14.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "node_modules/@guardian/consent-manager",
+      "wastedBytes": 7817,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/commercial/7e57fde41df1f5f80b9f/graun.standalone.commercial.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "node_modules/@guardian/libs",
+      "wastedBytes": 5418,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/index.client.web.cf0285b4ee94c0e6baf1.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/commercial/7e57fde41df1f5f80b9f/graun.standalone.commercial.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "webpack://@guardian/dotcom-rendering/../ab-testing/config/abTests.ts",
+      "wastedBytes": 2241,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/Metrics-island.client.web.e3bbf90d4f70a5df98a7.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/SetABTests-island.client.web.868fc0a5d63af84daa73.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "webpack://@guardian/dotcom-rendering/./src/lib/thrift/protocols.ts",
+      "wastedBytes": 903,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/8568.client.web.b9c4d9c0a6d96a4cd98f.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/9173.client.web.e89e6058d13aa44758f1.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "webpack://@guardian/dotcom-rendering/./src/grid.ts",
+      "wastedBytes": 860,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/9173.client.web.e89e6058d13aa44758f1.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/Titlepiece-island.client.web.a62eea779ee49d1a5004.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "webpack://@guardian/dotcom-rendering/./src/client/updateIframeHeight.tsx",
+      "wastedBytes": 593,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/9460.client.web.fbdb245a82b42cc254f3.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/5280.client.web.87a372859dc83706ae42.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "webpack://@guardian/dotcom-rendering/./src/lib/thrift/nativeConnection.ts",
+      "wastedBytes": 548,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/8568.client.web.b9c4d9c0a6d96a4cd98f.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/9173.client.web.e89e6058d13aa44758f1.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "node_modules/lodash.debounce",
+      "wastedBytes": 529,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/RelativeTime-island.client.web.8479e70b5a6c3b6d43a6.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/2715.client.web.d7b9dd200d8cd31f790f.js"
+        }
+       ]
+      }
+     },
+     {
+      "source": "webpack://@guardian/dotcom-rendering/./src/lib/edition.ts",
+      "wastedBytes": 513,
+      "subItems": {
+       "type": "subitems",
+       "items": [
+        {
+         "url": "https://assets.guim.co.uk/assets/RelativeTime-island.client.web.8479e70b5a6c3b6d43a6.js"
+        },
+        {
+         "url": "https://assets.guim.co.uk/assets/EditionSwitcherBanner-island.client.web.3b2d937c9d185d647315.js"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "unused-css-rules": {
+   "score": 1,
+   "numericValue": 0,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "opportunity",
+    "overallSavingsBytes": 0,
+    "items": []
+   }
+  },
+  "unminified-javascript": {
+   "score": 1,
+   "numericValue": 0,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "opportunity",
+    "overallSavingsBytes": 0,
+    "items": []
+   }
+  },
+  "unminified-css": {
+   "score": 1,
+   "numericValue": 0,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "opportunity",
+    "overallSavingsBytes": 0,
+    "items": []
+   }
+  },
+  "cache-insight": {
+   "score": 0,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 300
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.97af9.js",
+      "wastedBytes": 75947.2,
+      "cacheLifetimeMs": 3600000,
+      "totalBytes": 94934
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/unified/wrapperMessagingWithoutDetection.js",
+      "wastedBytes": 35780,
+      "cacheLifetimeMs": 3600000,
+      "totalBytes": 44725
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextSansWeb/GuardianTextSansWeb-Bold.woff2",
+      "wastedBytes": 7523.0625,
+      "cacheLifetimeMs": 302400000,
+      "totalBytes": 40123
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Bold.woff2",
+      "wastedBytes": 6902.8125,
+      "cacheLifetimeMs": 302400000,
+      "totalBytes": 36815
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextSansWeb/GuardianTextSansWeb-Regular.woff2",
+      "wastedBytes": 6764.25,
+      "cacheLifetimeMs": 302400000,
+      "totalBytes": 36076
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Regular.woff2",
+      "wastedBytes": 6689.625,
+      "cacheLifetimeMs": 302400000,
+      "totalBytes": 35678
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/Notice.1c267.css",
+      "wastedBytes": 5614.400000000001,
+      "cacheLifetimeMs": 3600000,
+      "totalBytes": 7018
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GHGuardianHeadline/GHGuardianHeadline-Bold.woff2",
+      "wastedBytes": 3205.5,
+      "cacheLifetimeMs": 302400000,
+      "totalBytes": 17096
+     },
+     {
+      "url": "https://sourcepoint.theguardian.com/polyfills.01516.js",
+      "wastedBytes": 1980,
+      "cacheLifetimeMs": 3600000,
+      "totalBytes": 2475
+     },
+     {
+      "url": "https://assets.guim.co.uk/polyfill.io/v3/polyfill.min.js?rum=0&features=es6%2Ces7%2Ces2017%2Ces2018%2Ces2019%2Cdefault-3.6%2CHTMLPictureElement%2CIntersectionObserver%2CIntersectionObserverEntry%2CURLSearchParams%2Cfetch%2CNodeList.prototype.forEach%2Cnavigator.sendBeacon%2Cperformance.now%2CPromise.allSettled&flags=gated&callback=guardianPolyfilled&unknown=polyfill&cacheClear=1",
+      "wastedBytes": 0,
+      "cacheLifetimeMs": 604800000,
+      "totalBytes": 0
+     }
+    ]
+   }
+  },
+  "font-display-insight": {
+   "score": 0,
+   "metricSavings": {
+    "FCP": 50,
+    "INP": 0
+   },
+   "details": {
+    "type": "table",
+    "items": [
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GHGuardianHeadline/GHGuardianHeadline-Bold.woff2",
+      "wastedMs": 70
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Bold.woff2",
+      "wastedMs": 65
+     },
+     {
+      "url": "https://interactive.guim.co.uk/fonts/guss-webfonts/GuardianTextEgyptianWeb/GuardianTextEgyptianWeb-Regular.woff2",
+      "wastedMs": 45
+     }
+    ]
+   }
+  },
+  "modern-http-insight": {
+   "score": 1,
+   "metricSavings": {
+    "FCP": 0,
+    "LCP": 0
+   },
+   "details": {
+    "type": "table",
+    "items": []
+   }
+  }
+ }
+}

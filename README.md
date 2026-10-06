@@ -27,6 +27,12 @@ npm run build
 npm start
 ```
 
+Tests (Vitest, no Chrome needed — they run against a trimmed real Lighthouse report in `lib/__fixtures__/`):
+
+```bash
+npm test             # or npm run test:watch
+```
+
 ### Running a test
 
 1. Choose the **page type** (Homepage, Lobby, Promotions or Login). Each type remembers its last URL.
@@ -81,26 +87,39 @@ Collapsible sections with a one-line summary, sortable columns and a button to c
 
 Thresholds and page types live in [`lib/config.ts`](lib/config.ts):
 
-- `THRESHOLDS`: what counts as an oversized image or script, a slow API call (`slowApiMs`) or a heavy page (`pageBytes`). The last two only drive the Summarize tab.
+- `THRESHOLDS`: what counts as an oversized image or script, a slow API call (`slowApiMs`, `verySlowApiMs`) or a heavy page (`pageBytes`, `veryHeavyPageBytes`). The API and page-weight limits only drive the Summarize tab.
+- `PRIORITY_THRESHOLDS`: how Lighthouse's estimated savings map to High / Medium / Low priority in the Summarize tab.
 - `RATINGS`: the good / poor limits used for colors.
 - `LCP_PHASES` and `OPPORTUNITIES`: the tips shown in the diagnosis. Edit them to match your stack.
-- `PAGE_TYPES`: the page types offered in the form.
+- `PAGE_TYPES` and `DEVICES`: the page types and devices offered in the form.
 
 ## Project structure
 
+Code follows the team standards in [`docs/ESTANDARES_DE_CODIGO.md`](docs/ESTANDARES_DE_CODIGO.md); custom React hooks are grouped in `app/hooks/`, and each `lib/` module lives with its test.
+
 ```
-app/page.jsx            main page: form, queue progress, results, history
-app/components/         TestForm, Results, Summary, History, ScoreChip
-app/api/test            POST: queue a test · GET/DELETE /api/test/[id]: status / cancel
-app/api/report          POST: build the PDF report
-lib/lighthouse.ts       runs Lighthouse in headless Chrome
-lib/analyze.ts          turns the Lighthouse report into metrics, diagnosis and findings (pure function)
-lib/summarize.ts        builds the Summarize tab: verdict, prioritized fixes and what works (pure function)
-lib/queue.ts            in-memory queue: one test at a time, ETA and cancellation
-lib/storage.ts          history in localStorage (client side)
-lib/compare.ts          better / worse rules against the previous test
-lib/pdf.ts              PDF report (pdfkit)
-lib/config.ts           thresholds, page types and tips
+app/page.jsx                 Server Component: static header + <Workspace />
+app/components/
+  ui/                        shared building blocks: Icon, Badge, CopyButton, Tabs, Accordion
+  Workspace/                 the interactive part ('use client'): form, progress, results and history
+  TestForm/                  new-test form
+  Results/                   results panel: DeviceResult, Diagnosis, DataTable
+  Summary/                   Summarize tab: verdict, prioritized fixes
+  History/                   saved tests, one tab per page type
+app/hooks/                   custom hooks: useTestJob (run, poll, cancel), useHistory, useRememberedUrls,
+                             useSortedRows, useExportPdf, useCopyToClipboard, useArrowKeyTabs
+app/api/test                 POST: queue a test · GET/DELETE /api/test/[id]: status / cancel
+app/api/report               POST: build the PDF report
+lib/lighthouse.ts            runs Lighthouse in headless Chrome
+lib/analyze.ts               Lighthouse report → metrics, diagnosis and findings (pure)
+lib/summarize.ts             Summarize tab: verdict, prioritized fixes and what works (pure)
+lib/queue.ts + estimate.ts   in-memory queue (one test at a time); ETA and position math (pure)
+lib/storage.ts               history and remembered URLs in localStorage (all keys prefixed casino-perf:)
+lib/compare.ts               better / worse rules against the previous test
+lib/pdf.ts                   PDF report (pdfkit)
+lib/format.ts · cn.ts        shared text formatters · conditional class names
+lib/tokens.ts                design tokens shared with app/globals.css (a test keeps them in sync)
+lib/config.ts                thresholds, page types, devices and tips
 ```
 
 $

@@ -1,255 +1,334 @@
-import { LCP_PHASES, METRICS, OPPORTUNITIES, RATINGS, THRESHOLDS, formatBytes, formatValue, rate } from './config.ts';
+import { LCP_PHASES, METRICS, OPPORTUNITIES, PRIORITY_THRESHOLDS, RATINGS, THRESHOLDS, rate } from './config.ts';
+import { formatBytes, formatMs, formatScore, formatValue, shortUrl } from './format.ts';
 import type { Comparison, MetricKey, Priority, Rating, Summary, SummaryAction, SummaryVital, TestResult } from './types.ts';
 
-type Input = TestResult & { runs?: number; comparison?: Comparison | null };
-type Vital = SummaryVital['key'];
+type SummaryInput = TestResult & { runs?: number; comparison?: Comparison | null };
+type VitalKey = SummaryVital['key'];
+/** `lead` marca las acciones de métricas fuera de objetivo, que van antes que las oportunidades de su misma prioridad. */
 type Action = SummaryAction & { lead?: boolean };
 
-const VITALS: { key: Vital; label: string; problem: string }[] = [
+const VITALS: { key: VitalKey; label: string; problem: string }[] = [
   { key: 'lcp', label: 'LCP', problem: 'The main content appears late' },
   { key: 'fcp', label: 'FCP', problem: 'Nothing shows on screen for too long' },
   { key: 'tbt', label: 'TBT', problem: 'The page stays unresponsive while it loads' },
   { key: 'cls', label: 'CLS', problem: 'Content jumps around while loading' },
 ];
+const CHANGE_LABELS: Record<MetricKey, string> = { score: 'Score', lcp: 'LCP', fcp: 'FCP', tbt: 'TBT', cls: 'CLS', pageSize: 'Page size', requestCount: 'Requests' };
 const RANK: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 const RATING_WORD: Record<Rating, string> = { good: 'good', ok: 'needs improvement', poor: 'poor', none: 'unknown' };
 const SHOWN_FILES = 3;
+const MAX_URL_IN_TEXT = 50;
 // Estas auditorías se funden con los hallazgos de imágenes y scripts en vez de repetirse.
-const MERGED = ['image-delivery-insight', 'unused-javascript'];
+const MERGED_OPPORTUNITIES = ['image-delivery-insight', 'unused-javascript'];
 
-const ms = (v: number) => formatValue('ms', v);
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
-const sum = (xs: number[]) => xs.reduce((s, v) => s + v, 0);
-const isHttp = (u: string) => /^https?:/i.test(u);
-const shortUrl = (u: string, n = 70) => {
-  let s = u;
-  try { const x = new URL(u); s = x.host + x.pathname + x.search; } catch { /* no es una URL */ }
-  return s.length > n ? `${s.slice(0, n - 1)}…` : s;
-};
-const where = (url: string, detail?: string) => ({ text: shortUrl(url), ...(isHttp(url) ? { href: url } : {}), ...(detail ? { detail } : {}) });
+const plural = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
+const sum = (values: number[]) => values.reduce((total, value) => total + value, 0);
+const isHttp = (url: string) => /^https?:/i.test(url);
+const metricFormat = (key: MetricKey) => METRICS.find((metric) => metric.key === key)?.fmt ?? 'int';
+const formatMetric = (key: MetricKey, value: number) => (key === 'score' ? formatScore(value) : formatValue(metricFormat(key), value));
+const findOpportunity = (test: SummaryInput, id: string) => test.findings.diagnosis?.opportunities.find((opportunity) => opportunity.id === id);
+/** Ahorros de la tabla antigua: solo cuentan en pruebas guardadas antes de que existiera el diagnóstico. */
+const legacySavings = (test: SummaryInput) => (test.findings.diagnosis ? {} : test.findings.savings);
 
-function fmtTarget(key: Vital) {
-  const v = RATINGS[key].good;
-  if (key === 'cls') return String(v);
-  return v >= 1000 ? `${v / 1000} s` : `${v} ms`;
+const where = (url: string, detail?: string) => ({
+  text: shortUrl(url, { maxLength: 70 }),
+  ...(isHttp(url) ? { href: url } : {}),
+  ...(detail ? { detail } : {}),
+});
+
+function formatTarget(key: VitalKey) {
+  const target = RATINGS[key].good;
+  if (key === 'cls') return String(target);
+  return target >= 1000 ? `${target / 1000} s` : `${target} ms`;
 }
 
 /** Prioridad según lo que Lighthouse estima ahorrar. */
-function priorityFor({ ms: saved = 0, bytes = 0 }: { ms?: number; bytes?: number }): Priority {
-  if (saved >= 300 || bytes >= 500 * 1024) return 'high';
-  if (saved >= 100 || bytes >= 100 * 1024) return 'medium';
+function priorityFromSavings({ ms = 0, bytes = 0 }: { ms?: number; bytes?: number }): Priority {
+  if (ms >= PRIORITY_THRESHOLDS.highMs || bytes >= PRIORITY_THRESHOLDS.highBytes) return 'high';
+  if (ms >= PRIORITY_THRESHOLDS.mediumMs || bytes >= PRIORITY_THRESHOLDS.mediumBytes) return 'medium';
   return 'low';
 }
-const atLeast = (p: Priority, floor: Priority): Priority => (RANK[p] <= RANK[floor] ? p : floor);
-const fromRating = (r: Rating): Priority | null => (r === 'poor' ? 'high' : r === 'ok' ? 'medium' : null);
+const atLeast = (priority: Priority, floor: Priority): Priority => (RANK[priority] <= RANK[floor] ? priority : floor);
+const priorityFromRating = (rating: Rating): Priority | null => (rating === 'poor' ? 'high' : rating === 'ok' ? 'medium' : null);
+
+const byPriority = (a: Action, b: Action) =>
+  RANK[a.priority] - RANK[b.priority]
+  || Number(!!b.lead) - Number(!!a.lead)
+  || (b.savingsMs ?? 0) - (a.savingsMs ?? 0)
+  || (b.savingsBytes ?? 0) - (a.savingsBytes ?? 0);
+
+function buildVitals(test: SummaryInput): SummaryVital[] {
+  return VITALS.map(({ key, label }) => ({
+    key,
+    label,
+    value: formatValue(metricFormat(key), test[key]),
+    target: `≤ ${formatTarget(key)}`,
+    rating: rate(key, test[key]),
+  }));
+}
+
+// — Métricas fuera de objetivo —
+
+function buildLcpAction(test: SummaryInput): Action[] {
+  const priority = priorityFromRating(rate('lcp', test.lcp));
+  if (!priority || test.lcp == null) return [];
+  const lcpDiagnosis = test.findings.diagnosis?.lcp;
+  const phases = lcpDiagnosis?.phases ?? [];
+  const total = sum(phases.map((phase) => phase.duration));
+  const dominant = phases.reduce<(typeof phases)[number] | null>((max, phase) => (phase.duration > (max?.duration ?? 0) ? phase : max), null);
+  const dominantTip = dominant ? LCP_PHASES[dominant.id] : undefined;
+
+  let why = `LCP is ${formatMs(test.lcp)} (target ≤ ${formatTarget('lcp')}).`;
+  let tip = 'Make the largest element on screen available sooner: a smaller, optimized file that is discoverable early in the HTML and not held back by scripts.';
+  if (dominant && dominantTip && total > 0) {
+    why += ` Biggest share of the delay: ${dominantTip.label} (${Math.round((dominant.duration / total) * 100)}%).`;
+    tip = dominantTip.tip;
+  }
+  const selector = lcpDiagnosis?.element?.selector;
+  return [{
+    id: 'lcp', lead: true, title: 'Speed up the main content (LCP)', why, tip, priority,
+    where: selector ? [{ text: selector, detail: 'LCP element' }] : [],
+  }];
+}
+
+function buildRenderBlockingAction(test: SummaryInput): Action[] {
+  const renderBlocking = test.findings.diagnosis?.renderBlocking ?? [];
+  const fcpPriority = priorityFromRating(rate('fcp', test.fcp));
+  if (!renderBlocking.length && !fcpPriority) return [];
+  const why = [];
+  if (fcpPriority && test.fcp != null) why.push(`FCP is ${formatMs(test.fcp)} (target ≤ ${formatTarget('fcp')}).`);
+  if (renderBlocking.length) {
+    const verb = renderBlocking.length === 1 ? 'blocks' : 'block';
+    why.push(`${plural(renderBlocking.length, 'request')} ${verb} the first paint (about ${formatMs(sum(renderBlocking.map((request) => request.ms)))}).`);
+  }
+  return [{
+    id: 'render-blocking', lead: true, title: 'Unblock the first paint (FCP)', why: why.join(' '),
+    tip: renderBlocking.length
+      ? 'Defer or async non-critical scripts, load non-critical CSS later and inline only the critical CSS.'
+      : 'Cut render-blocking CSS and JS and make the server answer faster (CDN or edge caching) so the first paint is not delayed.',
+    priority: fcpPriority ?? 'low',
+    where: renderBlocking.slice(0, SHOWN_FILES).map((request) => where(request.url, `${formatBytes(request.size)} · blocks ${formatMs(request.ms)}`)),
+  }];
+}
+
+function buildTbtAction(test: SummaryInput): Action[] {
+  const priority = priorityFromRating(rate('tbt', test.tbt));
+  if (!priority || test.tbt == null) return [];
+  const longTasks = test.findings.diagnosis?.longTasks;
+  let why = `TBT is ${formatMs(test.tbt)} (target ≤ ${formatTarget('tbt')}).`;
+  if (longTasks?.count && longTasks.longest) {
+    const source = shortUrl(longTasks.longest.url, { maxLength: MAX_URL_IN_TEXT });
+    why += ` ${plural(longTasks.count, 'long task')} blocked the main thread for ${formatMs(longTasks.totalMs)} in total; the longest (${formatMs(longTasks.longest.duration)}) came from ${source}.`;
+  }
+  return [{
+    id: 'tbt', lead: true, title: 'Free the main thread (TBT)', why,
+    tip: 'Defer or split heavy scripts (third-party tags, hydration, consent banners) and break long tasks (over 50 ms) into smaller chunks so taps and clicks respond right away.',
+    priority,
+    where: (test.findings.diagnosis?.mainThread ?? []).slice(0, SHOWN_FILES).map((script) => where(script.url, `${formatMs(script.total)} of CPU`)),
+  }];
+}
+
+function buildClsAction(test: SummaryInput): Action[] {
+  const priority = priorityFromRating(rate('cls', test.cls));
+  if (!priority) return [];
+  return [{
+    id: 'cls', lead: true, title: 'Stop layout shifts (CLS)', why: `CLS is ${formatValue('cls', test.cls)} (target ≤ ${formatTarget('cls')}).`,
+    tip: 'Set width and height (or aspect-ratio) on images, videos and embeds, reserve space for banners and late-loading widgets, and avoid inserting content above what is already visible.',
+    priority, where: [],
+  }];
+}
+
+const buildVitalActions = (test: SummaryInput): Action[] => [
+  ...buildLcpAction(test),
+  ...buildRenderBlockingAction(test),
+  ...buildTbtAction(test),
+  ...buildClsAction(test),
+];
+
+// — Imágenes y JavaScript (fusionados con su auditoría de Lighthouse) —
+
+function buildImageActions(test: SummaryInput): Action[] {
+  const { bigImages } = test.findings;
+  const insight = findOpportunity(test, 'image-delivery-insight');
+  const savingsBytes = insight?.savingsBytes ?? (legacySavings(test).oversizedImages || undefined);
+  if (!bigImages.length && !insight && !savingsBytes) return [];
+  const total = sum(bigImages.map((image) => image.size));
+  const why = [];
+  if (bigImages.length) why.push(`${plural(bigImages.length, 'image')} above ${formatBytes(THRESHOLDS.imageBytes)} (${formatBytes(total)} in total).`);
+  if (savingsBytes) why.push(`Lighthouse estimates ${formatBytes(savingsBytes)} can be saved by resizing and re-encoding images.`);
+  const heavyFloor = total >= PRIORITY_THRESHOLDS.heavyGroupBytes ? 'medium' : 'low';
+  return [{
+    id: 'images', title: 'Slim down heavy images', why: why.join(' '), tip: OPPORTUNITIES['image-delivery-insight'].tip,
+    priority: atLeast(priorityFromSavings({ ms: insight?.savingsMs, bytes: savingsBytes }), heavyFloor),
+    savingsMs: insight?.savingsMs, metric: insight?.metric, savingsBytes,
+    where: bigImages.length
+      ? bigImages.slice(0, SHOWN_FILES).map((image) => where(image.url, `${formatBytes(image.size)}${image.wasted ? ` · save ~${formatBytes(image.wasted)}` : ''}`))
+      : (insight?.items ?? []).slice(0, SHOWN_FILES).map((item) => where(item.url, item.wasted ? `save ~${formatBytes(item.wasted)}` : item.detail)),
+  }];
+}
+
+function buildScriptActions(test: SummaryInput): Action[] {
+  const { bigScripts } = test.findings;
+  const insight = findOpportunity(test, 'unused-javascript');
+  const unusedBytes = insight?.savingsBytes ?? (legacySavings(test).unusedJs || undefined);
+  if (!bigScripts.length && !insight && !unusedBytes) return [];
+  const total = sum(bigScripts.map((script) => script.size));
+  const why = [];
+  if (bigScripts.length) why.push(`${plural(bigScripts.length, 'script')} above ${formatBytes(THRESHOLDS.scriptBytes)} (${formatBytes(total)} in total).`);
+  if (unusedBytes) why.push(`About ${formatBytes(unusedBytes)} of JavaScript is not used while the page loads.`);
+  const heavyFloor = total >= PRIORITY_THRESHOLDS.heavyGroupBytes ? 'medium' : 'low';
+  return [{
+    id: 'scripts', title: 'Ship less JavaScript', why: why.join(' '), tip: OPPORTUNITIES['unused-javascript'].tip,
+    priority: atLeast(priorityFromSavings({ ms: insight?.savingsMs, bytes: unusedBytes }), heavyFloor),
+    savingsMs: insight?.savingsMs, metric: insight?.metric, savingsBytes: unusedBytes,
+    where: bigScripts.length
+      ? bigScripts.slice(0, SHOWN_FILES).map((script) => where(script.url, `${formatBytes(script.size)}${script.unused ? ` · ${formatBytes(script.unused)} unused` : ''}`))
+      : (insight?.items ?? []).slice(0, SHOWN_FILES).map((item) => where(item.url, item.detail)),
+  }];
+}
+
+// — Resto de oportunidades de Lighthouse —
+
+function buildOpportunityActions(test: SummaryInput): Action[] {
+  const opportunities = (test.findings.diagnosis?.opportunities ?? []).filter((opportunity) => !MERGED_OPPORTUNITIES.includes(opportunity.id));
+  const actions: Action[] = opportunities.map((opportunity) => {
+    const gain = [];
+    if (opportunity.savingsMs) gain.push(`up to ${formatMs(opportunity.savingsMs)} off ${opportunity.metric}`);
+    if (opportunity.savingsBytes) gain.push(`${formatBytes(opportunity.savingsBytes)} less to download`);
+    return {
+      id: opportunity.id, title: opportunity.title, tip: OPPORTUNITIES[opportunity.id]?.tip ?? '',
+      why: gain.length ? `Lighthouse estimates ${gain.join(' and ')}.` : 'Lighthouse flagged this audit.',
+      priority: priorityFromSavings({ ms: opportunity.savingsMs, bytes: opportunity.savingsBytes }),
+      savingsMs: opportunity.savingsMs, metric: opportunity.metric, savingsBytes: opportunity.savingsBytes,
+      where: opportunity.items.slice(0, SHOWN_FILES).map((item) => {
+        const fallback = item.wasted ? formatBytes(item.wasted) : item.wastedMs ? formatMs(item.wastedMs) : undefined;
+        return where(item.url, item.detail ?? fallback);
+      }),
+    };
+  });
+
+  const { unminifiedJs } = legacySavings(test);
+  if (unminifiedJs) {
+    const meta = OPPORTUNITIES['unminified-javascript'];
+    actions.push({
+      id: 'unminified-javascript', title: meta.title, tip: meta.tip,
+      why: `Lighthouse estimates ${formatBytes(unminifiedJs)} less to download.`,
+      priority: priorityFromSavings({ bytes: unminifiedJs }), savingsBytes: unminifiedJs, where: [],
+    });
+  }
+  return actions;
+}
+
+// — APIs y peso total —
+
+const findSlowApiCalls = (test: SummaryInput) => test.findings.slowApis.filter((request) => request.duration >= THRESHOLDS.slowApiMs);
+
+function buildApiActions(test: SummaryInput): Action[] {
+  const slow = findSlowApiCalls(test);
+  if (!slow.length) return [];
+  const [slowest] = slow;
+  const verb = slow.length === 1 ? 'takes' : 'take';
+  return [{
+    id: 'api', title: 'Speed up slow API calls',
+    why: `${plural(slow.length, 'API request')} ${verb} longer than ${THRESHOLDS.slowApiMs / 1000} s; the slowest is ${shortUrl(slowest.url, { maxLength: MAX_URL_IN_TEXT })} (${formatMs(slowest.duration)}).`,
+    tip: 'Cache responses (CDN or server side), run independent calls in parallel instead of one after another, and defer calls the first screen does not need.',
+    priority: slowest.duration >= THRESHOLDS.verySlowApiMs ? 'high' : 'medium',
+    where: slow.slice(0, SHOWN_FILES).map((request) => where(request.url, `${formatMs(request.duration)}${request.status ? ` · HTTP ${request.status}` : ''}`)),
+  }];
+}
+
+function buildPageWeightActions(test: SummaryInput): Action[] {
+  if (test.pageSize < THRESHOLDS.pageBytes) return [];
+  return [{
+    id: 'page-weight', title: 'Lighten the page',
+    why: `The page transfers ${formatBytes(test.pageSize)} across ${plural(test.requestCount, 'request')}.`,
+    tip: 'Lazy-load images, video and widgets below the fold, serve compressed formats (Brotli, AVIF or WebP) and drop third-party tags you no longer use.',
+    priority: test.pageSize >= THRESHOLDS.veryHeavyPageBytes ? 'high' : 'medium',
+    where: [],
+  }];
+}
+
+// — Veredicto, cambios y lo que funciona —
+
+/** La métrica más alejada de su objetivo: primero las "poor" y, entre ellas, la de mayor valor relativo al umbral. */
+function findWorstVital(test: SummaryInput, vitals: SummaryVital[]) {
+  const severity = (vital: SummaryVital) => (test[vital.key] ?? 0) / RATINGS[vital.key].poor;
+  return vitals
+    .filter((vital) => vital.rating === 'ok' || vital.rating === 'poor')
+    .sort((x, y) => Number(y.rating === 'poor') - Number(x.rating === 'poor') || severity(y) - severity(x))[0];
+}
+
+function buildVerdict(test: SummaryInput, vitals: SummaryVital[]): Pick<Summary, 'rating' | 'headline' | 'detail'> {
+  const rating = rate('score', test.score);
+  const scoreDelta = test.comparison?.deltas.score;
+  const scoreChange = scoreDelta && scoreDelta.status !== 'same'
+    ? `, ${scoreDelta.diff > 0 ? 'up' : 'down'} ${Math.round(Math.abs(scoreDelta.diff))} from the previous test`
+    : '';
+  const scoreText = `Score ${test.score}/100${scoreChange}.`;
+
+  const worst = findWorstVital(test, vitals);
+  if (worst) {
+    const others = vitals.filter((vital) => vital.rating === 'ok' || vital.rating === 'poor').length - 1;
+    const othersText = others ? ` ${plural(others, 'other metric')} also ${others === 1 ? 'needs' : 'need'} attention.` : '';
+    return {
+      rating,
+      headline: VITALS.find((vital) => vital.key === worst.key)?.problem ?? '',
+      detail: `${worst.label} is ${worst.value} (${RATING_WORD[worst.rating]}; target ${worst.target}).${othersText} ${scoreText}`,
+    };
+  }
+  if (rating === 'good') return { rating, headline: 'Fast page: no major problems found', detail: `All Core Web Vitals are within target. ${scoreText}` };
+  return { rating, headline: 'Core Web Vitals are fine, but the score can still improve', detail: `${scoreText} The suggestions below are the remaining gains.` };
+}
+
+function buildWorkingList(test: SummaryInput, vitals: SummaryVital[]): string[] {
+  const { diagnosis, bigImages, bigScripts, slowApis } = test.findings;
+  const working = vitals
+    .filter((vital) => vital.rating === 'good')
+    .map((vital) => `${vital.label} is ${vital.value}, within the ${formatTarget(vital.key)} target.`);
+  if (diagnosis && !diagnosis.renderBlocking.length) working.push('No render-blocking requests.');
+  if (diagnosis && !diagnosis.longTasks.count) working.push('No long main-thread tasks.');
+  if (!bigImages.length) working.push(`No images above ${formatBytes(THRESHOLDS.imageBytes)}.`);
+  if (!bigScripts.length) working.push(`No scripts above ${formatBytes(THRESHOLDS.scriptBytes)}.`);
+  if (slowApis.length && !findSlowApiCalls(test).length) working.push(`API calls are quick (slowest ${formatMs(slowApis[0].duration)}).`);
+  return working;
+}
+
+function buildChanges(test: SummaryInput): Summary['changes'] {
+  const { comparison } = test;
+  if (!comparison) return null;
+  const worse: string[] = [];
+  const better: string[] = [];
+  for (const key of Object.keys(CHANGE_LABELS) as MetricKey[]) {
+    const delta = comparison.deltas[key];
+    if (!delta || delta.status === 'same') continue;
+    const sign = delta.diff > 0 ? '+' : '−';
+    const line = `${CHANGE_LABELS[key]}: ${formatMetric(key, delta.previous)} → ${formatMetric(key, delta.current)} (${sign}${formatMetric(key, Math.abs(delta.diff))})`;
+    (delta.status === 'worse' ? worse : better).push(line);
+  }
+  return { since: comparison.previousDate, worse, better, singleRun: (test.runs ?? 1) === 1 };
+}
 
 /**
  * Resume una prueba: veredicto, qué arreglar (priorizado, con evidencia y consejo) y qué va bien.
  * Es una función pura sobre los datos ya guardados; funciona también con pruebas anteriores al diagnóstico.
  */
-export function summarize(t: Input): Summary {
-  const f = t.findings;
-  const d = f.diagnosis;
-  const cmp = t.comparison ?? null;
-  const rating = rate('score', t.score);
-  const sv = d ? {} : f.savings; // sin diagnóstico, los ahorros salen de la tabla antigua
-  const opp = (id: string) => d?.opportunities.find((o) => o.id === id);
-
-  const vitals: SummaryVital[] = VITALS.map(({ key, label }) => ({
-    key, label,
-    value: formatValue(METRICS.find((m) => m.key === key)!.fmt, t[key]),
-    target: `≤ ${fmtTarget(key)}`,
-    rating: rate(key, t[key]),
-  }));
-  const notGood = vitals.filter((v) => v.rating === 'ok' || v.rating === 'poor');
-
-  const actions: Action[] = [];
-
-  // — Métricas fuera de objetivo —
-  const lcpRating = rate('lcp', t.lcp);
-  if (fromRating(lcpRating)) {
-    const phases = d?.lcp?.phases ?? [];
-    const total = sum(phases.map((p) => p.duration));
-    const top = phases.reduce<(typeof phases)[number] | null>((m, p) => (p.duration > (m?.duration ?? 0) ? p : m), null);
-    let why = `LCP is ${ms(t.lcp!)} (target ≤ ${fmtTarget('lcp')}).`;
-    let tip = 'Make the largest element on screen available sooner: a smaller, optimized file that is discoverable early in the HTML and not held back by scripts.';
-    if (top && total > 0 && LCP_PHASES[top.id]) {
-      why += ` Biggest share of the delay: ${LCP_PHASES[top.id].label} (${Math.round((top.duration / total) * 100)}%).`;
-      tip = LCP_PHASES[top.id].tip;
-    }
-    const el = d?.lcp?.element;
-    actions.push({
-      id: 'lcp', lead: true, title: 'Speed up the main content (LCP)', why, tip, priority: fromRating(lcpRating)!,
-      where: el?.selector ? [{ text: el.selector, detail: 'LCP element' }] : [],
-    });
-  }
-
-  const rb = d?.renderBlocking ?? [];
-  const fcpRating = rate('fcp', t.fcp);
-  if (rb.length || fromRating(fcpRating)) {
-    const why = [];
-    if (fromRating(fcpRating)) why.push(`FCP is ${ms(t.fcp!)} (target ≤ ${fmtTarget('fcp')}).`);
-    if (rb.length) why.push(`${plural(rb.length, 'request')} ${rb.length === 1 ? 'blocks' : 'block'} the first paint (about ${ms(sum(rb.map((r) => r.ms)))}).`);
-    actions.push({
-      id: 'render-blocking', lead: true, title: 'Unblock the first paint (FCP)', why: why.join(' '),
-      tip: rb.length
-        ? 'Defer or async non-critical scripts, load non-critical CSS later and inline only the critical CSS.'
-        : 'Cut render-blocking CSS and JS and make the server answer faster (CDN or edge caching) so the first paint is not delayed.',
-      priority: fromRating(fcpRating) ?? 'low',
-      where: rb.slice(0, SHOWN_FILES).map((r) => where(r.url, `${formatBytes(r.size)} · blocks ${ms(r.ms)}`)),
-    });
-  }
-
-  const tbtRating = rate('tbt', t.tbt);
-  if (fromRating(tbtRating)) {
-    const lt = d?.longTasks;
-    let why = `TBT is ${ms(t.tbt!)} (target ≤ ${fmtTarget('tbt')}).`;
-    if (lt?.count && lt.longest) why += ` ${plural(lt.count, 'long task')} blocked the main thread for ${ms(lt.totalMs)} in total; the longest (${ms(lt.longest.duration)}) came from ${shortUrl(lt.longest.url, 50)}.`;
-    actions.push({
-      id: 'tbt', lead: true, title: 'Free the main thread (TBT)', why,
-      tip: 'Defer or split heavy scripts (third-party tags, hydration, consent banners) and break long tasks (over 50 ms) into smaller chunks so taps and clicks respond right away.',
-      priority: fromRating(tbtRating)!,
-      where: (d?.mainThread ?? []).slice(0, SHOWN_FILES).map((r) => where(r.url, `${ms(r.total)} of CPU`)),
-    });
-  }
-
-  const clsRating = rate('cls', t.cls);
-  if (fromRating(clsRating)) {
-    actions.push({
-      id: 'cls', lead: true, title: 'Stop layout shifts (CLS)', why: `CLS is ${formatValue('cls', t.cls)} (target ≤ ${fmtTarget('cls')}).`,
-      tip: 'Set width and height (or aspect-ratio) on images, videos and embeds, reserve space for banners and late-loading widgets, and avoid inserting content above what is already visible.',
-      priority: fromRating(clsRating)!, where: [],
-    });
-  }
-
-  // — Imágenes —
-  const imgOpp = opp('image-delivery-insight');
-  const imgBytes = imgOpp?.savingsBytes ?? (sv.oversizedImages || undefined);
-  if (f.bigImages.length || imgOpp || imgBytes) {
-    const total = sum(f.bigImages.map((i) => i.size));
-    const why = [];
-    if (f.bigImages.length) why.push(`${plural(f.bigImages.length, 'image')} above ${formatBytes(THRESHOLDS.imageBytes)} (${formatBytes(total)} in total).`);
-    if (imgBytes) why.push(`Lighthouse estimates ${formatBytes(Math.round(imgBytes))} can be saved by resizing and re-encoding images.`);
-    actions.push({
-      id: 'images', title: 'Slim down heavy images', why: why.join(' '), tip: OPPORTUNITIES['image-delivery-insight'].tip,
-      priority: atLeast(priorityFor({ ms: imgOpp?.savingsMs, bytes: imgBytes }), total >= 1024 * 1024 ? 'medium' : 'low'),
-      savingsMs: imgOpp?.savingsMs, metric: imgOpp?.metric, savingsBytes: imgBytes,
-      where: f.bigImages.length
-        ? f.bigImages.slice(0, SHOWN_FILES).map((i) => where(i.url, `${formatBytes(i.size)}${i.wasted ? ` · save ~${formatBytes(i.wasted)}` : ''}`))
-        : (imgOpp?.items ?? []).slice(0, SHOWN_FILES).map((i) => where(i.url, i.wasted ? `save ~${formatBytes(Math.round(i.wasted))}` : i.detail)),
-    });
-  }
-
-  // — JavaScript pesado o sin usar —
-  const jsOpp = opp('unused-javascript');
-  const unusedBytes = jsOpp?.savingsBytes ?? (sv.unusedJs || undefined);
-  if (f.bigScripts.length || jsOpp || unusedBytes) {
-    const total = sum(f.bigScripts.map((s) => s.size));
-    const why = [];
-    if (f.bigScripts.length) why.push(`${plural(f.bigScripts.length, 'script')} above ${formatBytes(THRESHOLDS.scriptBytes)} (${formatBytes(total)} in total).`);
-    if (unusedBytes) why.push(`About ${formatBytes(Math.round(unusedBytes))} of JavaScript is not used while the page loads.`);
-    actions.push({
-      id: 'scripts', title: 'Ship less JavaScript', why: why.join(' '), tip: OPPORTUNITIES['unused-javascript'].tip,
-      priority: atLeast(priorityFor({ ms: jsOpp?.savingsMs, bytes: unusedBytes }), total >= 1024 * 1024 ? 'medium' : 'low'),
-      savingsMs: jsOpp?.savingsMs, metric: jsOpp?.metric, savingsBytes: unusedBytes,
-      where: f.bigScripts.length
-        ? f.bigScripts.slice(0, SHOWN_FILES).map((s) => where(s.url, `${formatBytes(s.size)}${s.unused ? ` · ${formatBytes(s.unused)} unused` : ''}`))
-        : (jsOpp?.items ?? []).slice(0, SHOWN_FILES).map((i) => where(i.url, i.detail)),
-    });
-  }
-
-  // — Resto de oportunidades de Lighthouse —
-  for (const o of d?.opportunities ?? []) {
-    if (MERGED.includes(o.id)) continue;
-    const gain = [];
-    if (o.savingsMs) gain.push(`up to ${ms(o.savingsMs)} off ${o.metric}`);
-    if (o.savingsBytes) gain.push(`${formatBytes(Math.round(o.savingsBytes))} less to download`);
-    actions.push({
-      id: o.id, title: o.title, tip: OPPORTUNITIES[o.id]?.tip ?? '',
-      why: gain.length ? `Lighthouse estimates ${gain.join(' and ')}.` : 'Lighthouse flagged this audit.',
-      priority: priorityFor({ ms: o.savingsMs, bytes: o.savingsBytes }),
-      savingsMs: o.savingsMs, metric: o.metric, savingsBytes: o.savingsBytes,
-      where: o.items.slice(0, SHOWN_FILES).map((i) => where(i.url, i.detail ?? (i.wasted ? formatBytes(Math.round(i.wasted)) : i.wastedMs ? ms(i.wastedMs) : undefined))),
-    });
-  }
-  if (!d && sv.unminifiedJs) {
-    actions.push({
-      id: 'unminified-javascript', title: OPPORTUNITIES['unminified-javascript'].title, tip: OPPORTUNITIES['unminified-javascript'].tip,
-      why: `Lighthouse estimates ${formatBytes(Math.round(sv.unminifiedJs))} less to download.`,
-      priority: priorityFor({ bytes: sv.unminifiedJs }), savingsBytes: sv.unminifiedJs, where: [],
-    });
-  }
-
-  // — APIs y peso total —
-  const slow = f.slowApis.filter((r) => r.duration >= THRESHOLDS.slowApiMs);
-  if (slow.length) {
-    actions.push({
-      id: 'api', title: 'Speed up slow API calls',
-      why: `${plural(slow.length, 'API request')} ${slow.length === 1 ? 'takes' : 'take'} longer than ${THRESHOLDS.slowApiMs / 1000} s; the slowest is ${shortUrl(slow[0].url, 50)} (${ms(slow[0].duration)}).`,
-      tip: 'Cache responses (CDN or server side), run independent calls in parallel instead of one after another, and defer calls the first screen does not need.',
-      priority: slow[0].duration >= 3000 ? 'high' : 'medium',
-      where: slow.slice(0, SHOWN_FILES).map((r) => where(r.url, `${ms(r.duration)}${r.status ? ` · HTTP ${r.status}` : ''}`)),
-    });
-  }
-  if (t.pageSize >= THRESHOLDS.pageBytes) {
-    actions.push({
-      id: 'page-weight', title: 'Lighten the page',
-      why: `The page transfers ${formatBytes(t.pageSize)} across ${plural(t.requestCount, 'request')}.`,
-      tip: 'Lazy-load images, video and widgets below the fold, serve compressed formats (Brotli, AVIF or WebP) and drop third-party tags you no longer use.',
-      priority: t.pageSize >= THRESHOLDS.pageBytes * 2 ? 'high' : 'medium', where: [],
-    });
-  }
-
-  actions.sort((a, b) => RANK[a.priority] - RANK[b.priority] || Number(!!b.lead) - Number(!!a.lead)
-    || (b.savingsMs ?? 0) - (a.savingsMs ?? 0) || (b.savingsBytes ?? 0) - (a.savingsBytes ?? 0));
-
-  // — Veredicto —
-  const worst = [...notGood].sort((x, y) => Number(y.rating === 'poor') - Number(x.rating === 'poor')
-    || (t[y.key]! / RATINGS[y.key].poor) - (t[x.key]! / RATINGS[x.key].poor))[0];
-  const scoreDelta = cmp?.deltas.score;
-  const scoreText = `Score ${t.score}/100${scoreDelta && scoreDelta.status !== 'same'
-    ? `, ${scoreDelta.diff > 0 ? 'up' : 'down'} ${Math.round(Math.abs(scoreDelta.diff))} from the previous test`
-    : ''}.`;
-  let headline: string;
-  let detail: string;
-  if (worst) {
-    headline = VITALS.find((v) => v.key === worst.key)!.problem;
-    const others = notGood.length - 1;
-    detail = `${worst.label} is ${worst.value} (${RATING_WORD[worst.rating]}; target ${worst.target}).${others ? ` ${plural(others, 'other metric')} also ${others === 1 ? 'needs' : 'need'} attention.` : ''} ${scoreText}`;
-  } else if (rating === 'good') {
-    headline = 'Fast page: no major problems found';
-    detail = `All Core Web Vitals are within target. ${scoreText}`;
-  } else {
-    headline = 'Core Web Vitals are fine, but the score can still improve';
-    detail = `${scoreText} The suggestions below are the remaining gains.`;
-  }
-
-  // — Qué va bien —
-  const working: string[] = [];
-  for (const v of vitals) if (v.rating === 'good') working.push(`${v.label} is ${v.value}, within the ${fmtTarget(v.key)} target.`);
-  if (d && !d.renderBlocking.length) working.push('No render-blocking requests.');
-  if (d && !d.longTasks.count) working.push('No long main-thread tasks.');
-  if (!f.bigImages.length) working.push(`No images above ${formatBytes(THRESHOLDS.imageBytes)}.`);
-  if (!f.bigScripts.length) working.push(`No scripts above ${formatBytes(THRESHOLDS.scriptBytes)}.`);
-  if (f.slowApis.length && !slow.length) working.push(`API calls are quick (slowest ${ms(f.slowApis[0].duration)}).`);
-
-  // — Cambios frente a la prueba anterior —
-  let changes: Summary['changes'] = null;
-  if (cmp) {
-    const worse: string[] = [];
-    const better: string[] = [];
-    const LABELS: Record<MetricKey, string> = { score: 'Score', lcp: 'LCP', fcp: 'FCP', tbt: 'TBT', cls: 'CLS', pageSize: 'Page size', requestCount: 'Requests' };
-    for (const key of Object.keys(LABELS) as MetricKey[]) {
-      const dl = cmp.deltas[key];
-      if (!dl || dl.status === 'same') continue;
-      const fmt = key === 'score' ? (v: number) => String(Math.round(v)) : (v: number) => formatValue(METRICS.find((m) => m.key === key)!.fmt, v);
-      (dl.status === 'worse' ? worse : better).push(`${LABELS[key]}: ${fmt(dl.previous)} → ${fmt(dl.current)} (${dl.diff > 0 ? '+' : '−'}${fmt(Math.abs(dl.diff))})`);
-    }
-    changes = { since: cmp.previousDate, worse, better, singleRun: (t.runs ?? 1) === 1 };
-  }
+export function summarize(test: SummaryInput): Summary {
+  const vitals = buildVitals(test);
+  const actions = [
+    ...buildVitalActions(test),
+    ...buildImageActions(test),
+    ...buildScriptActions(test),
+    ...buildOpportunityActions(test),
+    ...buildApiActions(test),
+    ...buildPageWeightActions(test),
+  ].sort(byPriority);
 
   return {
-    rating, headline, detail, vitals, caveats: t.warnings, changes, working,
-    actions: actions.map(({ lead, ...a }) => a),
+    ...buildVerdict(test, vitals),
+    vitals,
+    caveats: test.warnings,
+    changes: buildChanges(test),
+    actions: actions.map(({ lead, ...action }) => action),
+    working: buildWorkingList(test, vitals),
   };
 }

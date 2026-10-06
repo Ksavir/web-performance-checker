@@ -8,7 +8,7 @@ export async function POST(req) {
   let tests;
   try { tests = (await req.json()).results; } catch { tests = null; }
   const valid = Array.isArray(tests) && tests.length > 0 && tests.length <= 2
-    && tests.every((t) => t && typeof t.url === 'string' && t.findings && Array.isArray(t.warnings) && typeof t.createdAt === 'string');
+    && tests.every((test) => test && typeof test.url === 'string' && test.findings && Array.isArray(test.warnings) && typeof test.createdAt === 'string');
   if (!valid) return NextResponse.json({ error: 'Invalid report data.' }, { status: 400 });
   const pdf = await buildPdf(tests);
   const host = (() => { try { return new URL(tests[0].url).hostname; } catch { return 'report'; } })();

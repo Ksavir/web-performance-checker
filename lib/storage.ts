@@ -1,62 +1,91 @@
 import { compare } from './compare.ts';
-import type { Comparison, Device, PageType, TestResult, TestRow } from './types.ts';
+import { DEVICES } from './config.ts';
+import type { Comparison, Device, DeviceResultEntry, PageType, TestRow } from './types.ts';
 
-// Historial guardado en el navegador (localStorage). Reemplaza a la base de datos.
-const KEY = 'casino-perf:tests';
+// Historial y preferencias guardados en el navegador (localStorage). Reemplazan a una base de datos.
+// Todas las claves llevan el prefijo casino-perf: y se declaran aquí.
+const STORAGE_KEYS = {
+  tests: 'casino-perf:tests',
+  urls: 'casino-perf:urls',
+} as const;
 const MAX_TESTS = 100;
 
 export type BatchSummary = { batchId: string; url: string; pageType: PageType; createdAt: string; scores: Partial<Record<Device, number>> };
 export type BatchResult = TestRow & { comparison: Comparison | null };
+export type RememberedUrls = Partial<Record<PageType, string>>;
 
-function read(): TestRow[] {
+interface SaveBatchParams {
+  batchId: string;
+  url: string;
+  pageType: PageType;
+  results: DeviceResultEntry[];
+}
+
+function readJson<T>(key: string, fallback: T): T {
   try {
-    const data = JSON.parse(localStorage.getItem(KEY) || '[]');
-    return Array.isArray(data) ? data : [];
-  } catch { return []; }
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch { return fallback; }
 }
 
-function write(tests: TestRow[]): boolean {
-  try { localStorage.setItem(KEY, JSON.stringify(tests)); return true; } catch { return false; }
+function writeJson(key: string, value: unknown): boolean {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
 }
+
+function readTests(): TestRow[] {
+  const tests = readJson<unknown>(STORAGE_KEYS.tests, []);
+  return Array.isArray(tests) ? tests : [];
+}
+
+const writeTests = (tests: TestRow[]): boolean => writeJson(STORAGE_KEYS.tests, tests);
+const deviceOrder = (device: Device) => DEVICES.findIndex((entry) => entry.id === device);
 
 /** Guarda un lote (uno o dos dispositivos). Devuelve false si el navegador no permite guardar. */
-export function saveBatch(batchId: string, url: string, pageType: PageType, results: { device: Device; runs: number; result: TestResult }[]): boolean {
-  const tests = read();
-  let nextId = tests.reduce((m, t) => Math.max(m, t.id), 0) + 1;
+export function saveBatch({ batchId, url, pageType, results }: SaveBatchParams): boolean {
+  const tests = readTests();
+  let nextId = tests.reduce((max, test) => Math.max(max, test.id), 0) + 1;
   const createdAt = new Date().toISOString();
   for (const { device, runs, result } of results) {
     tests.push({ ...result, id: nextId++, batchId, url, pageType, device, createdAt, runs });
   }
-  return write(tests.slice(-MAX_TESTS));
+  return writeTests(tests.slice(-MAX_TESTS));
 }
 
+/** Pruebas de un lote, en el orden de DEVICES, cada una comparada con la anterior de la misma URL, tipo y dispositivo. */
 export function getBatch(batchId: string): BatchResult[] {
-  const tests = read();
+  const tests = readTests();
   return tests
-    .filter((t) => t.batchId === batchId)
-    .sort((a, b) => (a.device < b.device ? 1 : -1))
-    .map((t) => {
-      const prev = tests.filter((p) => p.id < t.id && p.url === t.url && p.pageType === t.pageType && p.device === t.device).pop() || null;
-      return { ...t, comparison: compare(t, prev) };
+    .filter((test) => test.batchId === batchId)
+    .sort((a, b) => deviceOrder(a.device) - deviceOrder(b.device))
+    .map((test) => {
+      const previous = tests
+        .filter((other) => other.id < test.id && other.url === test.url && other.pageType === test.pageType && other.device === test.device)
+        .pop() ?? null;
+      return { ...test, comparison: compare(test, previous) };
     });
 }
 
 /** Lotes recientes, el más nuevo primero. */
 export function listBatches(): BatchSummary[] {
-  const map = new Map<string, BatchSummary & { last: number }>();
-  for (const t of read()) {
-    const b = map.get(t.batchId) || { batchId: t.batchId, url: t.url, pageType: t.pageType, createdAt: t.createdAt, scores: {}, last: 0 };
-    b.scores[t.device] = t.score;
-    b.last = Math.max(b.last, t.id);
-    map.set(t.batchId, b);
+  const batches = new Map<string, BatchSummary & { lastId: number }>();
+  for (const test of readTests()) {
+    const batch = batches.get(test.batchId) ?? { batchId: test.batchId, url: test.url, pageType: test.pageType, createdAt: test.createdAt, scores: {}, lastId: 0 };
+    batch.scores[test.device] = test.score;
+    batch.lastId = Math.max(batch.lastId, test.id);
+    batches.set(test.batchId, batch);
   }
-  return [...map.values()].sort((a, b) => b.last - a.last).map(({ last, ...b }) => b);
+  return [...batches.values()].sort((a, b) => b.lastId - a.lastId).map(({ lastId, ...batch }) => batch);
 }
 
 export function deleteBatch(batchId: string) {
-  write(read().filter((t) => t.batchId !== batchId));
+  writeTests(readTests().filter((test) => test.batchId !== batchId));
 }
 
-export function clearAll() {
-  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+export function clearBatches() {
+  try { localStorage.removeItem(STORAGE_KEYS.tests); } catch { /* sin almacenamiento: no hay nada que borrar */ }
 }
+
+/** Última URL usada para cada tipo de página. */
+export const readRememberedUrls = (): RememberedUrls => readJson<RememberedUrls>(STORAGE_KEYS.urls, {});
+
+export const saveRememberedUrls = (urls: RememberedUrls): boolean => writeJson(STORAGE_KEYS.urls, urls);

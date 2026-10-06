@@ -1,4 +1,8 @@
+import { Instrument_Sans } from 'next/font/google';
 import './globals.css';
+
+// next/font aloja la fuente con la app (sin petición bloqueante a Google Fonts) y aplica font-display: swap.
+const instrumentSans = Instrument_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-sans' });
 
 export const metadata = {
   title: 'Web Performance Check',
@@ -8,12 +12,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={instrumentSans.variable}>
       <body>{children}</body>
     </html>
   );

@@ -10,7 +10,52 @@ export interface Lhr {
   runWarnings?: string[];
   finalDisplayedUrl?: string;
   categories?: { performance?: { score: number | null } };
-  audits?: Record<string, any>;
+  audits?: Record<string, LhrAudit | undefined>;
+}
+
+export interface LhrAudit {
+  score?: number | null;
+  numericValue?: number;
+  /** Ahorro estimado por métrica (LCP, FCP, TBT, CLS...). */
+  metricSavings?: Record<string, number | undefined>;
+  /** `items` es un objeto (no una lista) en las auditorías de tipo checklist, que la app no lee. */
+  details?: { type?: string; items?: LhrItem[] | Record<string, unknown>; overallSavingsBytes?: number };
+}
+
+/** Fila de una tabla o lista de Lighthouse; solo los campos que lee la app. */
+export interface LhrItem {
+  type?: string;
+  url?: string;
+  source?: string;
+  label?: string;
+  subpart?: string;
+  duration?: number;
+  total?: number;
+  scripting?: number;
+  scriptParseCompile?: number;
+  totalBytes?: number;
+  wastedBytes?: number;
+  wastedMs?: number;
+  wastedPercent?: number;
+  cacheLifetimeMs?: number;
+  protocol?: string;
+  selector?: string;
+  snippet?: string;
+  nodeLabel?: string;
+  resourceType?: string;
+  mimeType?: string;
+  statusCode?: number;
+  networkRequestTime?: number;
+  networkEndTime?: number;
+  startTime?: number;
+  endTime?: number;
+  transferSize?: number;
+  resourceSize?: number;
+  /** Tabla anidada, por ejemplo las fases dentro del desglose del LCP (un objeto en los checklist). */
+  items?: LhrItem[] | Record<string, unknown>;
+  subItems?: { items: { reason?: string; signal?: string }[] };
+  /** Lighthouse trae más campos por fila; la app los ignora. */
+  [field: string]: unknown;
 }
 
 export interface Request {
@@ -102,6 +147,12 @@ export interface Comparison {
   deltas: Partial<Record<MetricKey, Delta>>;
 }
 
+export interface DeviceResultEntry {
+  device: Device;
+  runs: number;
+  result: TestResult;
+}
+
 export interface Job {
   id: string;
   batchId: string;
@@ -112,7 +163,7 @@ export interface Job {
   status: 'queued' | 'running' | 'done' | 'error' | 'cancelled';
   progress: { done: number; total: number; label: string };
   errors: { device: Device; message: string }[];
-  results: { device: Device; runs: number; result: TestResult }[];
+  results: DeviceResultEntry[];
   createdAt: number;
 }
 
