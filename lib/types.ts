@@ -172,6 +172,42 @@ export interface Job {
   createdAt: number;
 }
 
+export interface ScheduleEvery {
+  unit: 'hours' | 'days';
+  n: number;
+}
+
+/** Prueba recurrente guardada en el servidor (ver lib/schedule.ts y lib/scheduler.ts). */
+export interface Schedule {
+  id: string;
+  url: string;
+  pageType: PageType;
+  devices: Device[];
+  runs: number;
+  network: Network;
+  every: ScheduleEvery;
+  /** "HH:mm" en `timezone`; solo se usa cuando la frecuencia es en días. */
+  timeOfDay: string;
+  /** Zona horaria IANA, p. ej. "America/Mexico_City". */
+  timezone: string;
+  enabled: boolean;
+  createdAt: number;
+  lastRunAt: number | null;
+  nextRunAt: number;
+  /** Trabajo de la cola que sigue pendiente; evita apilar otra corrida mientras tanto. */
+  activeJobId: string | null;
+}
+
+/** Resultado de una corrida programada. Sin `rows` cuando todos los dispositivos fallaron. */
+export interface ScheduledRun {
+  id: string;
+  scheduleId: string;
+  startedAt: number;
+  status: 'done' | 'error';
+  errors: { device: Device; message: string }[];
+  rows: TestRow[];
+}
+
 export type Priority = 'high' | 'medium' | 'low';
 
 export interface SummaryVital {

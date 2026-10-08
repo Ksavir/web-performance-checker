@@ -42,7 +42,8 @@ interface EnqueueParams {
   network: Network;
 }
 
-export function enqueue({ url, pageType, devices, runs, network }: EnqueueParams): Job {
+/** `onFinish` se llama cuando la prueba termina (hecha, fallida o cancelada); un error dentro de él no afecta a la cola. */
+export function enqueue({ url, pageType, devices, runs, network }: EnqueueParams, onFinish?: (job: Job) => void): Job {
   const id = crypto.randomUUID();
   const job: Job = {
     id, batchId: id, url, pageType, devices, runs, network,
@@ -55,7 +56,12 @@ export function enqueue({ url, pageType, devices, runs, network }: EnqueueParams
   jobs.set(id, job);
   pruneFinishedJobs();
 
-  state.__chain = (state.__chain ?? Promise.resolve()).then(() => runJob(job)).catch(() => {});
+  state.__chain = (state.__chain ?? Promise.resolve())
+    .then(async () => {
+      await runJob(job);
+      onFinish?.(job);
+    })
+    .catch(() => {});
   return job;
 }
 

@@ -1,5 +1,5 @@
-import { compare } from './compare.ts';
-import { DEVICES, resolveNetwork } from './config.ts';
+import { compare, isSameSetup } from './compare.ts';
+import { DEVICES } from './config.ts';
 import type { Comparison, Device, DeviceResultEntry, Network, PageType, TestRow } from './types.ts';
 
 // Historial y preferencias guardados en el navegador (localStorage). Reemplazan a una base de datos.
@@ -51,10 +51,6 @@ export function saveBatch({ batchId, url, pageType, network, results }: SaveBatc
   }
   return writeTests(tests.slice(-MAX_TESTS));
 }
-
-/** Misma página, dispositivo y red: si cambia la red, los tiempos no son comparables. */
-const isSameSetup = (a: TestRow, b: TestRow) =>
-  a.url === b.url && a.pageType === b.pageType && a.device === b.device && resolveNetwork(a) === resolveNetwork(b);
 
 /** Pruebas de un lote, en el orden de DEVICES, cada una comparada con la anterior de la misma página, dispositivo y red. */
 export function getBatch(batchId: string): BatchResult[] {

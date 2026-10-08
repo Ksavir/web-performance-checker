@@ -97,6 +97,15 @@ Collapsible sections with a one-line summary, sortable columns and a button to c
 - Every test is saved in the browser (`localStorage`, key `casino-perf:tests`, last 100 tests), grouped in tabs by page type. You can delete a single test or clear the whole history.
 - **Export PDF** creates a report with the metrics, the comparison with the previous test, the diagnosis and the findings for each device.
 
+### Scheduled tests
+
+Use **Schedule this test…** under the form to run the same test automatically: every N hours (1–168), or every N days (1–30) at a fixed time in your time zone. Up to 20 schedules.
+
+- Schedules and their results are saved on the server in `data/schedules.json` and `data/scheduled-runs.json` (last 50 runs per schedule). Manual tests still live in the browser.
+- Open a schedule's **Runs** to see each result with the comparison against the previous run; **Run now** triggers one without changing the calendar; **Pause** stops it.
+- The scheduler lives inside the Next.js server (`instrumentation.ts`), so it **only runs while the app is running**. Runs missed while it was off happen once when the app starts again, and the next one is counted from then.
+- Scheduled runs share the single test queue with manual tests, and a schedule never queues a new run while its previous one is still waiting.
+
 ## Configuration
 
 Thresholds and page types live in [`lib/config.ts`](lib/config.ts):

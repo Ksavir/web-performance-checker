@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DEFAULT_NETWORK, DEVICES, NETWORKS, PAGE_TYPES } from '@/lib/config';
 import Icon from '../ui/Icon';
-import { HINT, PANEL } from '../ui/styles';
+import { FIELD, GHOST_BUTTON, HINT, INPUT, LABEL, PANEL, PRIMARY_BUTTON, SELECT } from '../ui/styles';
 import { useRememberedUrls } from '@/app/hooks/useRememberedUrls';
 
 // Detalles de presentación de cada dispositivo; la lista de dispositivos sale de lib/config.
@@ -10,9 +10,6 @@ const DEVICE_DETAILS = {
   desktop: { note: 'Computer, Laptop', icon: 'desktop' },
 };
 const DEVICE_ICON_SIZE = 22;
-const FIELD = 'm-0 grid min-w-0 content-start gap-[7px] border-0 p-0';
-const LABEL = 'p-0 text-[13.5px] font-semibold';
-const INPUT = 'w-full rounded-sm border border-line-strong bg-panel px-3 py-2.5 transition-colors placeholder:text-faint focus:border-accent focus:shadow-[0_0_0_3px_var(--color-accent-soft)] focus:outline-none';
 const HIDDEN_INPUT = 'peer pointer-events-none absolute opacity-0';
 const FOCUS_RING = 'peer-focus-visible:outline-2 peer-focus-visible:outline-accent';
 const ALL_DEVICES_SELECTED = Object.fromEntries(DEVICES.map((device) => [device.id, true]));
@@ -67,7 +64,7 @@ function DevicesField({ selected, onChange }) {
   );
 }
 
-export default function TestForm({ disabled, onSubmit }) {
+export default function TestForm({ disabled, onSubmit, onSchedule }) {
   const [pageType, setPageType] = useState(PAGE_TYPES[0].id);
   const [devices, setDevices] = useState(ALL_DEVICES_SELECTED);
   const [runs, setRuns] = useState('1');
@@ -75,16 +72,18 @@ export default function TestForm({ disabled, onSubmit }) {
   const { urls, rememberUrl } = useRememberedUrls();
   const noDevice = !DEVICES.some((device) => devices[device.id]);
 
+  const buildRequest = () => ({
+    url: urls[pageType] ?? '',
+    pageType,
+    devices: DEVICES.map((device) => device.id).filter((id) => devices[id]),
+    runs: Number(runs),
+    network,
+  });
+
   const submit = (event) => {
     event.preventDefault();
     if (noDevice) return;
-    onSubmit({
-      url: urls[pageType] ?? '',
-      pageType,
-      devices: DEVICES.map((device) => device.id).filter((id) => devices[id]),
-      runs: Number(runs),
-      network,
-    });
+    onSubmit(buildRequest());
   };
 
   return (
@@ -102,7 +101,7 @@ export default function TestForm({ disabled, onSubmit }) {
 
       <div className={FIELD}>
         <label className={LABEL} htmlFor="network">Network</label>
-        <select id="network" className={`${INPUT} cursor-pointer`} value={network} onChange={(event) => setNetwork(event.target.value)} aria-describedby="network-hint">
+        <select id="network" className={SELECT} value={network} onChange={(event) => setNetwork(event.target.value)} aria-describedby="network-hint">
           {NETWORKS.map((profile) => <option key={profile.id} value={profile.id}>{profile.label} ({profile.description})</option>)}
         </select>
         <p className={HINT} id="network-hint">Simulated latency and speed (Slow 4G is Lighthouse's mobile default). Only tests on the same network are compared.</p>
@@ -110,13 +109,14 @@ export default function TestForm({ disabled, onSubmit }) {
 
       <div className={FIELD}>
         <label className={LABEL} htmlFor="runs">Accuracy</label>
-        <select id="runs" className={`${INPUT} cursor-pointer`} value={runs} onChange={(event) => setRuns(event.target.value)}>
+        <select id="runs" className={SELECT} value={runs} onChange={(event) => setRuns(event.target.value)}>
           <option value="1">1 run per device (about 1 min)</option>
           <option value="3">3 runs, median (more stable)</option>
         </select>
       </div>
 
-      <button className="cursor-pointer rounded-sm border-0 bg-accent px-5 py-3 font-semibold text-on-accent transition-colors enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={disabled || noDevice}>{disabled ? 'Running…' : 'Run test'}</button>
+      <button className={PRIMARY_BUTTON} type="submit" disabled={disabled || noDevice}>{disabled ? 'Running…' : 'Run test'}</button>
+      <button type="button" className={`${GHOST_BUTTON} px-5 py-2.5`} disabled={noDevice} onClick={() => onSchedule(buildRequest())}>Schedule this test…</button>
       <p className={HINT}>Only test sites you own or have permission to test.</p>
     </form>
   );

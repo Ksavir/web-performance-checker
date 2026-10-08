@@ -11,6 +11,12 @@ export const RATING = {
 };
 export const RATING_PILL = 'rounded-full text-(color:--c) bg-(color:--cs) font-bold';
 
+export const FIELD = 'm-0 grid min-w-0 content-start gap-[7px] border-0 p-0';
+export const LABEL = 'p-0 text-[13.5px] font-semibold';
+export const INPUT = 'w-full rounded-sm border border-line-strong bg-panel px-3 py-2.5 transition-colors placeholder:text-faint focus:border-accent focus:shadow-[0_0_0_3px_var(--color-accent-soft)] focus:outline-none';
+export const SELECT = `${INPUT} cursor-pointer`;
+export const PRIMARY_BUTTON = 'cursor-pointer rounded-sm border-0 bg-accent px-5 py-3 font-semibold text-on-accent transition-colors enabled:hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60';
+
 export const HINT = 'm-0 text-[13px] text-muted';
 export const NOTE = 'mb-2 mt-0 text-[13px] text-muted';
 export const NONE = 'py-2 text-sm text-muted';

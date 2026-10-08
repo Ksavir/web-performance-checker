@@ -1,4 +1,5 @@
-import type { Comparison, Delta, MetricKey } from './types.ts';
+import { resolveNetwork } from './config.ts';
+import type { Comparison, Delta, MetricKey, TestRow } from './types.ts';
 
 // Dirección "mejor" y tolerancia para considerar que una métrica no cambió.
 const RULES: Record<MetricKey, { better: 'higher' | 'lower'; tol: (p: number) => number }> = {
@@ -31,3 +32,7 @@ export function compare(current: Comparable, previous: (Comparable & { id: numbe
   }
   return { previousId: previous.id, previousDate: previous.createdAt, deltas };
 }
+
+/** Misma página, dispositivo y red: si cambia la red, los tiempos no son comparables. */
+export const isSameSetup = (a: TestRow, b: TestRow) =>
+  a.url === b.url && a.pageType === b.pageType && a.device === b.device && resolveNetwork(a) === resolveNetwork(b);
