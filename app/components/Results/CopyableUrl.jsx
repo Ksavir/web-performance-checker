@@ -1,14 +1,15 @@
 import CopyButton from '@/app/components/ui/CopyButton';
 import { shortUrl } from '@/lib/format';
+import { ROW_HINT, URL_LINK, URL_WRAP } from '../ui/styles';
 
 function UrlWithHint({ url, hint, children }) {
   return (
     <>
-      <span className="url-wrap">
+      <span className={URL_WRAP}>
         {children}
         <CopyButton text={url} />
       </span>
-      {hint && <div className="row-hint">{hint}</div>}
+      {hint && <div className={ROW_HINT}>{hint}</div>}
     </>
   );
 }
@@ -26,7 +27,7 @@ export function CopyableText({ url, hint }) {
 export function CopyableLink({ url, hint }) {
   return (
     <UrlWithHint url={url} hint={hint}>
-      <a className="url-link" href={url} target="_blank" rel="noopener noreferrer" title={`${url} (opens in a new tab)`}>{shortUrl(url)}</a>
+      <a className={URL_LINK} href={url} target="_blank" rel="noopener noreferrer" title={`${url} (opens in a new tab)`}>{shortUrl(url)}</a>
     </UrlWithHint>
   );
 }

@@ -1,5 +1,5 @@
 // Configuración compartida entre servidor y cliente (sin imports de Node).
-import type { PageType, Device, Rating, ValueFormat } from './types.ts';
+import type { PageType, Device, Network, Rating, ValueFormat } from './types.ts';
 
 export const PAGE_TYPES: { id: PageType; label: string }[] = [
   { id: 'homepage', label: 'Homepage' },
@@ -18,6 +18,21 @@ export const DEVICES: { id: Device; label: string; short: string }[] = [
 ];
 
 export const getDeviceLabel = (device: Device): string => DEVICES.find((entry) => entry.id === device)?.label ?? device;
+
+/** Perfiles de red que se pueden elegir. Los valores que recibe Lighthouse están en lib/throttling.ts. */
+export const NETWORKS: { id: Network; label: string; description: string }[] = [
+  { id: '3g', label: '3G', description: '300 ms, 0.7 Mbps' },
+  { id: 'slow4g', label: 'Slow 4G', description: '150 ms, 1.6 Mbps' },
+  { id: 'fast4g', label: 'Fast 4G', description: '40 ms, 10 Mbps' },
+  { id: 'none', label: 'No throttling', description: 'real speed' },
+];
+export const DEFAULT_NETWORK: Network = 'slow4g';
+
+export const getNetworkLabel = (network: Network): string => NETWORKS.find((entry) => entry.id === network)?.label ?? network;
+
+/** Red de una prueba guardada. Las anteriores a esta opción usaban el perfil por defecto de Lighthouse para su dispositivo. */
+export const resolveNetwork = (test: { device: Device; network?: Network }): Network =>
+  test.network ?? (test.device === 'desktop' ? 'fast4g' : 'slow4g');
 
 // Umbrales de "sobredimensionado" (propuestos; confirmar con el equipo).
 export const THRESHOLDS = {

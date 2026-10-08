@@ -1,8 +1,8 @@
 import PDFDocument from 'pdfkit';
-import { LCP_PHASES, METRICS, OPPORTUNITIES, PAGE_TYPES, getDeviceLabel, rate } from './config.ts';
+import { LCP_PHASES, METRICS, OPPORTUNITIES, PAGE_TYPES, getDeviceLabel, getNetworkLabel, rate, resolveNetwork } from './config.ts';
 import { formatBytes, formatDate, formatMs, formatScore, formatValue, shortUrl } from './format.ts';
 import { COLORS } from './tokens.ts';
-import type { Comparison, Delta, Diagnosis, MetricKey, TestRow } from './types.ts';
+import type { Comparison, Delta, Diagnosis, MetricKey, Network, TestRow } from './types.ts';
 
 type ReportTest = TestRow & { comparison: Comparison | null };
 type Doc = InstanceType<typeof PDFDocument>;
@@ -74,6 +74,7 @@ function drawTestHeader(doc: Doc, test: ReportTest) {
   doc.font('Helvetica-Bold').fontSize(15).fillColor(COLORS.accent).text(getDeviceLabel(test.device));
   doc.moveDown(0.2).font('Helvetica-Bold').fontSize(12).fillColor(RATING_COLORS[rate('score', test.score)])
     .text(`Performance score: ${test.score} / 100`);
+  doc.font('Helvetica').fontSize(9).fillColor(COLORS.muted).text(`Network: ${getNetworkLabel(resolveNetwork(test))}`);
   const intro = comparison
     ? `Compared with previous test on ${formatPdfDate(comparison.previousDate)} (score ${comparison.deltas.score?.previous}): ${formatDelta(comparison.deltas.score, 'score')}`
     : 'No previous test to compare with.';
@@ -96,7 +97,7 @@ function drawTestHeader(doc: Doc, test: ReportTest) {
   }
 }
 
-function drawDiagnosis(doc: Doc, diagnosis: Diagnosis) {
+function drawDiagnosis(doc: Doc, { diagnosis, network }: { diagnosis: Diagnosis; network: Network }) {
   const { lcp, opportunities, longTasks, mainThread } = diagnosis;
   if (lcp?.phases.length) {
     const total = lcp.phases.reduce((sum, phase) => sum + phase.duration, 0);
@@ -107,7 +108,9 @@ function drawDiagnosis(doc: Doc, diagnosis: Diagnosis) {
       rows: lcp.phases.map((phase) => [phase.label, formatMs(phase.duration), `${Math.round((phase.duration / Math.max(total, 1)) * 100)}%`]),
       widths: [250, 90, 90],
     });
-    drawNote(doc, `Measured on the real, unthrottled load (${formatMs(total)}); the LCP metric above is simulated on a throttled connection, so compare shares, not times.`);
+    if (network !== 'none') {
+      drawNote(doc, `Measured on the real, unthrottled load (${formatMs(total)}); the LCP metric above is simulated on a throttled connection, so compare shares, not times.`);
+    }
     if (LCP_PHASES[dominant.id]) drawNote(doc, `Biggest share: ${dominant.label}. ${LCP_PHASES[dominant.id].tip}`);
     if (lcp.element?.selector) drawNote(doc, `LCP element: ${lcp.element.label ? `${lcp.element.label} - ` : ''}${lcp.element.selector}`);
   }
@@ -177,7 +180,7 @@ export function buildPdf(tests: ReportTest[]): Promise<Buffer> {
     tests.forEach((test, index) => {
       if (index > 0) doc.addPage();
       drawTestHeader(doc, test);
-      if (test.findings.diagnosis) drawDiagnosis(doc, test.findings.diagnosis);
+      if (test.findings.diagnosis) drawDiagnosis(doc, { diagnosis: test.findings.diagnosis, network: resolveNetwork(test) });
       drawFindings(doc, test);
     });
 

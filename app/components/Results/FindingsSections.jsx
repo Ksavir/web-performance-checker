@@ -1,6 +1,7 @@
 import { THRESHOLDS } from '@/lib/config';
 import { formatBytes } from '@/lib/format';
 import Accordion from '../ui/Accordion';
+import { SECTION } from '../ui/styles';
 import DataTable from './DataTable';
 import FindingBadge from './FindingBadge';
 import {
@@ -28,7 +29,7 @@ export default function FindingsSections({ findings }) {
   const legacyRows = diagnosis ? [] : legacySavingsRows(savings);
 
   return (
-    <div className="section">
+    <div className={SECTION}>
       <Accordion>
         <Accordion.Summary title="Five slowest API requests" badge={<FindingBadge value={slowest > 1 ? `slowest ${Math.round(slowest)} ms` : null} />} />
         <Accordion.Body note="XHR/fetch calls and JSON responses, ordered by duration.">

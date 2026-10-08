@@ -8,6 +8,7 @@ import JobProgress from './JobProgress';
 import ResultsSkeleton from './ResultsSkeleton';
 import { useHistory } from '@/app/hooks/useHistory';
 import { useTestJob } from '@/app/hooks/useTestJob';
+import { ERROR } from '../ui/styles';
 
 // Los resultados solo aparecen después de una prueba: su código no va en la carga inicial.
 const Results = dynamic(() => import('../Results/Results'), { loading: () => <ResultsSkeleton /> });
@@ -19,14 +20,14 @@ export default function Workspace() {
   const { activeBatch } = history;
 
   return (
-    <div className="workspace">
-      <div className="side">
+    <div className="grid grid-cols-1 items-start gap-5 min-[960px]:grid-cols-[360px_minmax(0,1fr)]">
+      <div className="grid min-w-0 content-start gap-4">
         <TestForm disabled={test.running} onSubmit={test.start} />
         <History batches={history.batches} activeId={activeBatch?.batchId} onOpen={history.openBatch} onClear={history.clearHistory} onDelete={history.removeBatch} />
       </div>
 
-      <main className="content">
-        {test.error && <div className="error" role="alert">{test.error}</div>}
+      <main className="grid min-w-0 gap-4">
+        {test.error && <div className={ERROR} role="alert">{test.error}</div>}
         {test.running && <JobProgress job={test.job} cancelling={test.cancelling} onCancel={test.cancel} />}
         {!test.running && <JobErrors job={test.job} />}
         {activeBatch && <Results key={activeBatch.batchId} batch={activeBatch} />}

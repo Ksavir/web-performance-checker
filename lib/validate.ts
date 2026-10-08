@@ -1,5 +1,5 @@
-import { DEVICES, PAGE_TYPES } from './config.ts';
-import type { Device, PageType } from './types.ts';
+import { DEFAULT_NETWORK, DEVICES, NETWORKS, PAGE_TYPES } from './config.ts';
+import type { Device, Network, PageType } from './types.ts';
 
 const ALLOWED_RUNS = [1, 3];
 
@@ -8,6 +8,7 @@ export interface TestRequest {
   pageType: PageType;
   devices: Device[];
   runs: number;
+  network: Network;
 }
 
 export function normalizeUrl(input: unknown): string {
@@ -34,5 +35,7 @@ export function validateRequest(body: unknown): TestRequest {
   const devices = DEVICES.map((entry) => entry.id).filter((device) => requested.includes(device));
   if (!devices.length) throw new Error('Choose at least one device.');
   const runs = ALLOWED_RUNS.includes(Number(input.runs)) ? Number(input.runs) : 1;
-  return { url, pageType, devices, runs };
+  const network = input.network == null ? DEFAULT_NETWORK : NETWORKS.find((n) => n.id === input.network)?.id;
+  if (!network) throw new Error('Choose a network profile.');
+  return { url, pageType, devices, runs, network };
 }

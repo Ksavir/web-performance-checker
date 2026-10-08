@@ -1,6 +1,6 @@
 import { compare } from './compare.ts';
-import { DEVICES } from './config.ts';
-import type { Comparison, Device, DeviceResultEntry, PageType, TestRow } from './types.ts';
+import { DEVICES, resolveNetwork } from './config.ts';
+import type { Comparison, Device, DeviceResultEntry, Network, PageType, TestRow } from './types.ts';
 
 // Historial y preferencias guardados en el navegador (localStorage). Reemplazan a una base de datos.
 // Todas las claves llevan el prefijo casino-perf: y se declaran aquí.
@@ -18,6 +18,7 @@ interface SaveBatchParams {
   batchId: string;
   url: string;
   pageType: PageType;
+  network: Network;
   results: DeviceResultEntry[];
 }
 
@@ -41,17 +42,21 @@ const writeTests = (tests: TestRow[]): boolean => writeJson(STORAGE_KEYS.tests, 
 const deviceOrder = (device: Device) => DEVICES.findIndex((entry) => entry.id === device);
 
 /** Guarda un lote (uno o dos dispositivos). Devuelve false si el navegador no permite guardar. */
-export function saveBatch({ batchId, url, pageType, results }: SaveBatchParams): boolean {
+export function saveBatch({ batchId, url, pageType, network, results }: SaveBatchParams): boolean {
   const tests = readTests();
   let nextId = tests.reduce((max, test) => Math.max(max, test.id), 0) + 1;
   const createdAt = new Date().toISOString();
   for (const { device, runs, result } of results) {
-    tests.push({ ...result, id: nextId++, batchId, url, pageType, device, createdAt, runs });
+    tests.push({ ...result, id: nextId++, batchId, url, pageType, device, createdAt, runs, network });
   }
   return writeTests(tests.slice(-MAX_TESTS));
 }
 
-/** Pruebas de un lote, en el orden de DEVICES, cada una comparada con la anterior de la misma URL, tipo y dispositivo. */
+/** Misma página, dispositivo y red: si cambia la red, los tiempos no son comparables. */
+const isSameSetup = (a: TestRow, b: TestRow) =>
+  a.url === b.url && a.pageType === b.pageType && a.device === b.device && resolveNetwork(a) === resolveNetwork(b);
+
+/** Pruebas de un lote, en el orden de DEVICES, cada una comparada con la anterior de la misma página, dispositivo y red. */
 export function getBatch(batchId: string): BatchResult[] {
   const tests = readTests();
   return tests
@@ -59,7 +64,7 @@ export function getBatch(batchId: string): BatchResult[] {
     .sort((a, b) => deviceOrder(a.device) - deviceOrder(b.device))
     .map((test) => {
       const previous = tests
-        .filter((other) => other.id < test.id && other.url === test.url && other.pageType === test.pageType && other.device === test.device)
+        .filter((other) => other.id < test.id && isSameSetup(other, test))
         .pop() ?? null;
       return { ...test, comparison: compare(test, previous) };
     });

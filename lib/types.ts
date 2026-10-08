@@ -1,4 +1,6 @@
 export type Device = 'mobile' | 'desktop';
+/** Perfil de red simulado durante la prueba ('none' = sin throttling). */
+export type Network = 'none' | '3g' | 'slow4g' | 'fast4g';
 export type PageType = 'homepage' | 'lobby' | 'promotions' | 'login';
 export type Rating = 'good' | 'ok' | 'poor' | 'none';
 export type MetricKey = 'score' | 'lcp' | 'fcp' | 'tbt' | 'cls' | 'pageSize' | 'requestCount';
@@ -132,6 +134,8 @@ export interface TestRow extends TestResult {
   device: Device;
   createdAt: string;
   runs: number;
+  /** Ausente en las pruebas guardadas antes de poder elegir la red (ver resolveNetwork). */
+  network?: Network;
 }
 
 export interface Delta {
@@ -160,6 +164,7 @@ export interface Job {
   pageType: PageType;
   devices: Device[];
   runs: number;
+  network: Network;
   status: 'queued' | 'running' | 'done' | 'error' | 'cancelled';
   progress: { done: number; total: number; label: string };
   errors: { device: Device; message: string }[];

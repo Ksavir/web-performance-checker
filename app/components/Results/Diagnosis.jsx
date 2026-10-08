@@ -1,5 +1,6 @@
 import { formatMs, shortUrl } from '@/lib/format';
 import Accordion from '../ui/Accordion';
+import { SECTION } from '../ui/styles';
 import DataTable from './DataTable';
 import FindingBadge from './FindingBadge';
 import { MAIN_THREAD_COLUMNS, RENDER_BLOCKING_COLUMNS } from './findingColumns';
@@ -36,10 +37,10 @@ function MainThread({ longTasks, scripts }) {
 }
 
 /** El "por qué" de la prueba: fases del LCP, oportunidades, bloqueos de render y hilo principal. */
-export default function Diagnosis({ diagnosis }) {
+export default function Diagnosis({ diagnosis, network }) {
   return (
-    <div className="section">
-      {diagnosis.lcp && <LcpBreakdown lcp={diagnosis.lcp} />}
+    <div className={SECTION}>
+      {diagnosis.lcp && <LcpBreakdown lcp={diagnosis.lcp} network={network} />}
       <Opportunities items={diagnosis.opportunities} />
       {diagnosis.renderBlocking.length > 0 && <RenderBlocking requests={diagnosis.renderBlocking} />}
       <MainThread longTasks={diagnosis.longTasks} scripts={diagnosis.mainThread} />

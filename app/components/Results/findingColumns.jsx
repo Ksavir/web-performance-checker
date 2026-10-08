@@ -20,7 +20,7 @@ function DurationCell({ duration, slowest }) {
   return (
     <>
       {Math.round(duration)} ms
-      <div className="mini" style={{ width: `${(duration / slowest) * 100}%` }} />
+      <div className="mt-[5px] h-1 min-w-0.5 rounded-full bg-poor opacity-60" style={{ width: `${(duration / slowest) * 100}%` }} />
     </>
   );
 }
@@ -34,9 +34,9 @@ export const buildApiColumns = (slowest) => [
 
 function ImageCell({ image }) {
   return (
-    <div className="img-row">
+    <div className="flex items-start gap-3">
       <ImageThumb url={image.url} />
-      <div className="img-info"><CopyableLink url={image.url} hint={image.hint} /></div>
+      <div className="min-w-0"><CopyableLink url={image.url} hint={image.hint} /></div>
     </div>
   );
 }

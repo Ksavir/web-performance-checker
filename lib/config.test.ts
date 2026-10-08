@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { rate } from './config.ts';
+import { rate, resolveNetwork } from './config.ts';
 
 describe('rate', () => {
   it.each([
@@ -40,5 +40,26 @@ describe('rate', () => {
 
     // Assert
     expect(rating).toBe('none');
+  });
+});
+
+describe('resolveNetwork', () => {
+  it('usa la red guardada en la prueba', () => {
+    // Act
+    const network = resolveNetwork({ device: 'desktop', network: '3g' });
+
+    // Assert
+    expect(network).toBe('3g');
+  });
+
+  it.each([
+    ['mobile', 'slow4g'],
+    ['desktop', 'fast4g'],
+  ] as const)('asume el perfil por defecto de Lighthouse para pruebas antiguas en %s (%s)', (device, expected) => {
+    // Act
+    const network = resolveNetwork({ device });
+
+    // Assert
+    expect(network).toBe(expected);
   });
 });

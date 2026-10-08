@@ -3,7 +3,7 @@ import { runLighthouse } from './lighthouse.ts';
 import { pickMedian } from './analyze.ts';
 import { getDeviceLabel } from './config.ts';
 import { averageRunMs, buildQueueInfo, isActiveJob, type QueueInfo } from './estimate.ts';
-import type { Device, Job, PageType, TestResult } from './types.ts';
+import type { Device, Job, Network, PageType, TestResult } from './types.ts';
 
 // Estado en memoria guardado en globalThis para sobrevivir al hot-reload de Next.
 // Las pruebas se ejecutan de una en una para que no compitan por CPU y se distorsionen.
@@ -34,10 +34,18 @@ function pruneFinishedJobs() {
   }
 }
 
-export function enqueue({ url, pageType, devices, runs }: { url: string; pageType: PageType; devices: Device[]; runs: number }): Job {
+interface EnqueueParams {
+  url: string;
+  pageType: PageType;
+  devices: Device[];
+  runs: number;
+  network: Network;
+}
+
+export function enqueue({ url, pageType, devices, runs, network }: EnqueueParams): Job {
   const id = crypto.randomUUID();
   const job: Job = {
-    id, batchId: id, url, pageType, devices, runs,
+    id, batchId: id, url, pageType, devices, runs, network,
     status: 'queued',
     progress: { done: 0, total: devices.length * runs, label: 'Waiting in queue' },
     errors: [],
@@ -76,7 +84,7 @@ async function runDevice(job: Job, device: Device, signal: AbortSignal): Promise
     job.progress.label = `${getDeviceLabel(device)} · run ${run} of ${job.runs}`;
     const started = Date.now();
     try {
-      results.push(await runLighthouse(job.url, device, signal));
+      results.push(await runLighthouse({ url: job.url, device, network: job.network, signal }));
     } catch (error) {
       if (signal.aborted) throw error;
       job.errors.push({ device, message: error instanceof Error ? error.message : String(error) });

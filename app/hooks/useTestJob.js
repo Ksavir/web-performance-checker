@@ -29,7 +29,7 @@ export function useTestJob({ onStart, onDone }) {
       if (data.status === 'cancelled') { setJob(null); return; }
       setJob({ id: jobId, ...data });
       if (data.status === 'done') {
-        const saved = onDone({ batchId: jobId, url: data.url, pageType: data.pageType, results: data.results });
+        const saved = onDone({ batchId: jobId, url: data.url, pageType: data.pageType, network: data.network, results: data.results });
         if (!saved) setError(SAVE_FAILED);
         return;
       }

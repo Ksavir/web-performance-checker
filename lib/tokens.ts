@@ -1,4 +1,4 @@
-// Tokens de diseño: la misma paleta que las variables de :root en app/globals.css.
+// Tokens de diseño: la misma paleta que las variables de @theme en app/globals.css (bloque @theme).
 // El PDF los usa directamente; tokens.test.ts comprueba que ambos sitios no se desincronicen.
 
 export const COLORS = {
@@ -36,7 +36,7 @@ export const RADII = {
   radiusXs: '6px',
   radiusSm: '9px',
   radiusTab: '10px',
-  radius: '14px',
+  radiusPanel: '14px',
   radiusPill: '999px',
 } as const;
 

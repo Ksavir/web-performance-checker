@@ -2,16 +2,24 @@ import lighthouse from 'lighthouse';
 import desktopConfig from 'lighthouse/core/config/desktop-config.js';
 import * as chromeLauncher from 'chrome-launcher';
 import { extract } from './analyze.ts';
-import type { Device, Lhr, TestResult } from './types.ts';
+import { buildThrottling } from './throttling.ts';
+import type { Device, Lhr, Network, TestResult } from './types.ts';
 
 const RUN_TIMEOUT_MS = 3 * 60 * 1000;
 const MAX_WAIT_FOR_LOAD_MS = 45_000;
 
+interface RunParams {
+  url: string;
+  device: Device;
+  network: Network;
+  signal?: AbortSignal;
+}
+
 /**
- * Ejecuta Lighthouse una vez (mobile o desktop) y devuelve el resultado normalizado.
+ * Ejecuta Lighthouse una vez (mobile o desktop, con la red elegida) y devuelve el resultado normalizado.
  * Requiere Chrome/Chromium instalado (o CHROME_PATH apuntando al ejecutable).
  */
-export async function runLighthouse(url: string, device: Device, signal?: AbortSignal): Promise<TestResult> {
+export async function runLighthouse({ url, device, network, signal }: RunParams): Promise<TestResult> {
   signal?.throwIfAborted();
   let chrome: chromeLauncher.LaunchedChrome;
   try {
@@ -32,8 +40,11 @@ export async function runLighthouse(url: string, device: Device, signal?: AbortS
       logLevel: 'error' as const,
       onlyCategories: ['performance'],
       maxWaitForLoad: MAX_WAIT_FOR_LOAD_MS,
+      // Los flags tienen prioridad sobre la configuración: la red elegida reemplaza la del perfil del dispositivo.
+      ...buildThrottling({ device, network }),
     };
-    const config = device === 'desktop' ? desktopConfig : undefined; // móvil = valores por defecto de Lighthouse
+    // La configuración solo aporta la emulación del dispositivo (pantalla y user agent); móvil = valores por defecto.
+    const config = device === 'desktop' ? desktopConfig : undefined;
 
     const timeout = new Promise<never>((_, reject) => {
       timer = setTimeout(() => reject(new Error('Lighthouse timed out after 3 minutes.')), RUN_TIMEOUT_MS);

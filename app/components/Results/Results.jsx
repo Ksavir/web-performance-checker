@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getDeviceLabel } from '@/lib/config';
 import { summarize } from '@/lib/summarize';
 import Icon from '../ui/Icon';
+import { PANEL } from '../ui/styles';
 import Tabs from '../ui/Tabs';
 import DeviceResult from './DeviceResult';
 import ResultsHeader from './ResultsHeader';
@@ -24,7 +25,7 @@ export default function Results({ batch }) {
   const content = view === 'result' ? <DeviceResult key={current.id} test={current} /> : <Summary key={current.id} summary={summary} />;
 
   return (
-    <section className="panel" aria-label="Test results">
+    <section className={PANEL} aria-label="Test results">
       <Tabs value={view} onChange={setView} variant="browser">
         <Tabs.List label="Result view">
           <Tabs.Tab value="result" icon={<Icon name="chart" />}>Test result</Tabs.Tab>

@@ -38,8 +38,9 @@ npm test             # or npm run test:watch
 1. Choose the **page type** (Homepage, Lobby, Promotions or Login). Each type remembers its last URL.
 2. Paste the **page URL**.
 3. Select **Mobile**, **Desktop** or both.
-4. Choose the **accuracy**: 1 run per device (about 1 min), or 3 runs and keep the median (more stable).
-5. Click **Run test**. Tests run one at a time; the app shows your position in the queue, the estimated time left, and lets you cancel.
+4. Choose the **network**: 3G, Slow 4G (default, Lighthouse's mobile profile), Fast 4G or No throttling (see below).
+5. Choose the **accuracy**: 1 run per device (about 1 min), or 3 runs and keep the median (more stable).
+6. Click **Run test**. Tests run one at a time; the app shows your position in the queue, the estimated time left, and lets you cancel.
 
 > Only test sites you own or have permission to test.
 
@@ -60,7 +61,20 @@ One card per device that gathers the whole test, so you do not have to look in s
 Tests saved before the diagnosis existed still get a summary, built from the data they have.
 
 ### Headline metrics
-Performance score (0–100) and the main Lighthouse metrics: **LCP, FCP, TBT, CLS**, page weight and number of requests. Values are colored green / yellow / red using Google's thresholds, and each one shows the change since the previous test of the same URL, page type and device.
+Performance score (0–100) and the main Lighthouse metrics: **LCP, FCP, TBT, CLS**, page weight and number of requests. Values are colored green / yellow / red using Google's thresholds, and each one shows the change since the previous test of the same URL, page type, device and network.
+
+### Network throttling
+
+Lighthouse **simulates** the chosen connection: it loads the page at full speed and estimates the timings for that network (`throttlingMethod: 'simulate'`). The CPU is slowed down by device, not by network: 4× on mobile, none on desktop.
+
+| Network | Latency (RTT) | Bandwidth |
+|---|---|---|
+| 3G | 300 ms | 0.7 Mbps |
+| Slow 4G (default) | 150 ms | 1.6 Mbps |
+| Fast 4G | 40 ms | 10 Mbps |
+| No throttling | — | real speed of the machine running the test (CPU not slowed down either) |
+
+Tests are only compared with earlier tests on the same network. Tests saved before the network option existed count as Slow 4G on mobile and Fast 4G on desktop (Lighthouse's defaults at the time).
 
 ### Diagnosis — why the page is slow
 ![LCP breakdown and top opportunities](docs/screenshots/diagnosis.png)
@@ -91,7 +105,7 @@ Thresholds and page types live in [`lib/config.ts`](lib/config.ts):
 - `PRIORITY_THRESHOLDS`: how Lighthouse's estimated savings map to High / Medium / Low priority in the Summarize tab.
 - `RATINGS`: the good / poor limits used for colors.
 - `LCP_PHASES` and `OPPORTUNITIES`: the tips shown in the diagnosis. Edit them to match your stack.
-- `PAGE_TYPES` and `DEVICES`: the page types and devices offered in the form.
+- `PAGE_TYPES`, `DEVICES` and `NETWORKS`: the page types, devices and network profiles offered in the form (`DEFAULT_NETWORK` is the preselected one). The values sent to Lighthouse for each network are in [`lib/throttling.ts`](lib/throttling.ts).
 
 ## Project structure
 
@@ -119,7 +133,8 @@ lib/compare.ts               better / worse rules against the previous test
 lib/pdf.ts                   PDF report (pdfkit)
 lib/format.ts · cn.ts        shared text formatters · conditional class names
 lib/tokens.ts                design tokens shared with app/globals.css (a test keeps them in sync)
-lib/config.ts                thresholds, page types, devices and tips
+lib/config.ts                thresholds, page types, devices, networks and tips
+lib/throttling.ts            Lighthouse throttling settings per network and device (pure)
 ```
 
 $

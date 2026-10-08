@@ -55,7 +55,23 @@ describe('validateRequest', () => {
     const params = validateRequest(VALID_BODY);
 
     // Assert
-    expect(params).toEqual({ url: 'https://example.com/lobby', pageType: 'lobby', devices: ['mobile'], runs: 1 });
+    expect(params).toEqual({ url: 'https://example.com/lobby', pageType: 'lobby', devices: ['mobile'], runs: 1, network: 'slow4g' });
+  });
+
+  it('acepta un perfil de red válido', () => {
+    // Act
+    const params = validateRequest({ ...VALID_BODY, network: 'none' });
+
+    // Assert
+    expect(params.network).toBe('none');
+  });
+
+  it('rechaza un perfil de red desconocido', () => {
+    // Act
+    const run = () => validateRequest({ ...VALID_BODY, network: '5g' });
+
+    // Assert
+    expect(run).toThrow('Choose a network profile.');
   });
 
   it('ordena los dispositivos (mobile antes que desktop) e ignora los desconocidos', () => {

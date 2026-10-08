@@ -2,7 +2,7 @@ import { Instrument_Sans } from 'next/font/google';
 import './globals.css';
 
 // next/font aloja la fuente con la app (sin petición bloqueante a Google Fonts) y aplica font-display: swap.
-const instrumentSans = Instrument_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-sans' });
+const instrumentSans = Instrument_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'], display: 'swap', variable: '--font-instrument' });
 
 export const metadata = {
   title: 'Web Performance Check',
